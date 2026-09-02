@@ -1,0 +1,39 @@
+---
+import { path, type Locale } from '../i18n/ui';
+import { useT } from '../i18n/strings';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<fieldset class="consent">
+  <legend class="visually-hidden">{en ? 'Permissions' : 'Συγκαταθέσεις'}</legend>
+
+  <div class="consent__item">
+    <input type="checkbox" id="c-dealer" name="consent_dealer" required />
+    <label class="consent__label" for="c-dealer">
+      <b>{t('consent.dealer.title')}</b>
+      {t('consent.dealer.body')}
+      <span class="consent__req">— {t('form.required')}</span>
+      <br /><a class="small" href={path(locale, 'dealerSharing')}>{t('footer.dealerSharing')} &rarr;</a>
+    </label>
+  </div>
+
+  <div class="consent__item">
+    <input type="checkbox" id="c-marketing" name="consent_marketing" />
+    <label class="consent__label" for="c-marketing">
+      <b>{t('consent.marketing.title')}</b>
+      {t('consent.marketing.body')}
+      <span class="consent__req">— {t('form.optional')}</span>
+    </label>
+  </div>
+
+  <div class="consent__item">
+    <input type="checkbox" id="c-reminder" name="consent_reminder" />
+    <label class="consent__label" for="c-reminder">
+      <b>{t('consent.reminder.title')}</b>
+      {t('consent.reminder.body')}
+      <span class="consent__req">— {t('form.optional')}</span>
+    </label>
+  </div>
+</fieldset>

@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import { problems, facts } from '../../data/site';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+const hardness = facts.find(f => f.id === 'hardness')!;
+---
+<Base locale={locale} routeKey="problems" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Water problems in Cyprus' : 'Προβλήματα νερού στην Κύπρο'}
+  description={en ? 'Limescale, chlorine taste and the cost of bottled water — what causes them in Cyprus, and what filtration can and cannot fix.' : 'Άλατα, γεύση χλωρίου και κόστος εμφιαλωμένου — τι τα προκαλεί στην Κύπρο και τι μπορεί να λύσει το φιλτράρισμα.'}>
+
+  <PageHeader locale={locale}
+    eyebrow={en ? 'Water problems' : 'Προβλήματα νερού'}
+    title={en ? 'Start with what is actually bothering you.' : 'Ξεκινήστε από αυτό που πραγματικά σας ενοχλεί.'}
+    lead={en
+      ? 'Most people arrive here with a symptom, not a specification. These pages explain what causes each one in Cyprus, and are straight about which ones a point-of-use filter can genuinely fix.'
+      : 'Οι περισσότεροι φτάνουν εδώ με ένα σύμπτωμα, όχι με προδιαγραφή. Αυτές οι σελίδες εξηγούν τι προκαλεί το καθένα στην Κύπρο, και είναι ειλικρινείς για το ποια μπορεί πραγματικά να λύσει ένα φίλτρο σημείου χρήσης.'} />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="grid grid--3">
+        {problems.map(p => (
+          <article class="card card--link">
+            <h2 class="card__title"><a href={path(locale, p.routeKey)}>{p.title[locale]}</a></h2>
+            <p class="card__body">{p.symptom[locale]}</p>
+            <p style="margin-top:var(--space-4)">
+              {p.answers === 'fully'
+                ? <span class="tier tier--verified">{en ? 'Fluux answers this' : 'Το Fluux το λύνει'}</span>
+                : <span class="tier tier--pending">{en ? 'Only in part' : 'Μόνο εν μέρει'}</span>}
+            </p>
+            <p class="card__foot">{t('cta.readMore')} &rarr;</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="notice notice--warn" style="margin-top:var(--space-7);max-width:66ch">
+        <p class="notice__title">{en ? 'About the numbers on these pages' : 'Για τους αριθμούς σε αυτές τις σελίδες'}</p>
+        <p>{hardness.note[locale]} {en
+          ? 'We have not been able to verify anything against the Water Development Department, so nothing here is presented as official.'
+          : 'Δεν έχουμε επιβεβαιώσει τίποτα από το Τμήμα Αναπτύξεως Υδάτων, οπότε τίποτα εδώ δεν παρουσιάζεται ως επίσημο.'}</p>
+      </div>
+    </div>
+  </section>
+
+  <CTABand locale={locale} />
+</Base>

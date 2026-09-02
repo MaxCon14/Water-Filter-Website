@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="about" selfPath={selfPath} altPath={altPath}
+  title={en ? 'About Fluux Cyprus' : 'Σχετικά με τη Fluux Κύπρου'}
+  description={en ? 'Who we are, where the product is made, and what we will not claim.' : 'Ποιοι είμαστε, πού κατασκευάζεται το προϊόν, και τι δεν ισχυριζόμαστε.'}>
+
+  <PageHeader locale={locale}
+    eyebrow={en ? 'About' : 'Σχετικά'}
+    title={en ? 'New here, and not pretending otherwise.' : 'Είμαστε καινούριοι, και δεν το κρύβουμε.'}
+    lead={en
+      ? 'The established water filtration companies in Cyprus have been trading for decades. We have not. So instead of claiming local heritage we do not have, we publish what we know, mark what we do not, and let a local installer do the part that matters.'
+      : 'Οι καθιερωμένες εταιρείες φίλτρων νερού στην Κύπρο δραστηριοποιούνται δεκαετίες. Εμείς όχι. Αντί λοιπόν να διεκδικούμε μια τοπική ιστορία που δεν έχουμε, δημοσιεύουμε ό,τι ξέρουμε, σημειώνουμε ό,τι δεν ξέρουμε, και αφήνουμε έναν τοπικό τεχνικό να κάνει το κομμάτι που μετράει.'} />
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>{en ? 'Where it is made' : 'Πού κατασκευάζεται'}</h2>
+      <p>{en
+        ? 'Fluux is a brand of Microfilter Co., a South Korean filtration manufacturer, distributed internationally through catering equipment and water treatment resellers. We would rather you read that here than discover it somewhere else.'
+        : 'Το Fluux είναι μάρκα της Microfilter Co., νοτιοκορεατικής κατασκευάστριας εταιρείας φίλτρων, με διεθνή διανομή μέσω μεταπωλητών εξοπλισμού εστίασης και επεξεργασίας νερού. Προτιμούμε να το διαβάσετε εδώ παρά να το ανακαλύψετε αλλού.'}</p>
+
+      <h2>{en ? 'What we will not claim' : 'Τι δεν θα ισχυριστούμε'}</h2>
+      <ul>
+        <li>{en ? 'That a filter under your sink protects your boiler, washing machine or solar heater. It does not.' : 'Ότι ένα φίλτρο κάτω από τον νεροχύτη προστατεύει τον θερμοσίφωνα, το πλυντήριο ή τον ηλιακό σας. Δεν το κάνει.'}</li>
+        <li>{en ? 'A performance figure we have not seen confirmed by the manufacturer.' : 'Κάποιο στοιχείο απόδοσης που δεν έχουμε δει επιβεβαιωμένο από τον κατασκευαστή.'}</li>
+        <li>{en ? 'A Cyprus water statistic taken from a competitor’s marketing page and presented as official.' : 'Κάποιο στοιχείο για το νερό της Κύπρου παρμένο από διαφημιστική σελίδα ανταγωνιστή και παρουσιασμένο ως επίσημο.'}</li>
+        <li>{en ? 'That you should buy without someone testing your water first.' : 'Ότι πρέπει να αγοράσετε χωρίς να ελέγξει κάποιος πρώτα το νερό σας.'}</li>
+      </ul>
+
+      <h2>{en ? 'Why there is no price on this site' : 'Γιατί δεν υπάρχει τιμή σε αυτόν τον ιστότοπο'}</h2>
+      <p>{en
+        ? 'Because the honest answer depends on your plumbing and whether a compatible head is already fitted, and because the dealer doing the work is the one who should quote it. We know an absent price can read as evasive, which is why each product page says plainly what we do and do not yet know about cost.'
+        : 'Επειδή η ειλικρινής απάντηση εξαρτάται από τα υδραυλικά σας και από το αν υπάρχει ήδη συμβατή κεφαλή, και επειδή την προσφορά πρέπει να τη δίνει αυτός που κάνει τη δουλειά. Ξέρουμε ότι η απουσία τιμής μπορεί να φανεί υπεκφυγή — γι᾽ αυτό κάθε σελίδα προϊόντος λέει ξεκάθαρα τι ξέρουμε και τι όχι για το κόστος.'}</p>
+    </div>
+  </section>
+
+  <CTABand locale={locale} />
+</Base>

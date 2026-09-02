@@ -1,0 +1,129 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import Readout from '../Readout.astro';
+import { problems, facts } from '../../data/site';
+interface Props { locale: Locale; problem: 'limescale' | 'taste' | 'bottled'; selfPath?: string; altPath?: string }
+const { locale, problem, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+const p = problems.find(x => x.routeKey === problem)!;
+const hardness = facts.find(f => f.id === 'hardness')!;
+const desal = facts.find(f => f.id === 'desal')!;
+const bottled = facts.find(f => f.id === 'bottled')!;
+
+const content = {
+  limescale: {
+    lead: {
+      en: 'It is the most common water complaint in Cyprus, and the one we are least able to solve completely. Here is why, and what actually helps.',
+      el: 'Είναι το πιο συνηθισμένο παράπονο για το νερό στην Κύπρο, και αυτό που λύνουμε λιγότερο πλήρως. Ορίστε γιατί, και τι πραγματικά βοηθάει.',
+    },
+    body: {
+      en: [
+        'Hard water carries dissolved calcium and magnesium. Heat it and those minerals come out of solution and stick — to your kettle element, the inside of your boiler, the drum of your washing machine, and the tank of your solar water heater.',
+        'The counterintuitive part is that desalination has not fixed this. Cyprus desalinates most of its drinking water, but minerals including magnesium sulphate and lime are deliberately added back afterwards, to stabilise the water and stop it corroding the distribution network. So the water leaving the plant is soft, and the water arriving at your tap is not.',
+      ],
+      el: [
+        'Το σκληρό νερό περιέχει διαλυμένο ασβέστιο και μαγνήσιο. Όταν θερμανθεί, αυτά τα μέταλλα καθιζάνουν και κολλάνε — στην αντίσταση του βραστήρα, μέσα στον θερμοσίφωνα, στον κάδο του πλυντηρίου και στη δεξαμενή του ηλιακού.',
+        'Το παράδοξο είναι ότι η αφαλάτωση δεν το έλυσε. Η Κύπρος αφαλατώνει το περισσότερο πόσιμο νερό της, όμως στη συνέχεια προστίθενται ξανά μέταλλα — θειικό μαγνήσιο και ασβέστης — για να σταθεροποιηθεί το νερό και να μη διαβρώνει το δίκτυο. Άρα το νερό που φεύγει από τη μονάδα είναι μαλακό· αυτό που φτάνει στη βρύση σας δεν είναι.',
+      ],
+    },
+    scope: {
+      en: 'A Fluux cartridge sits under one sink. The polyphosphate parts reduce scale forming downstream of the filter, which protects a coffee machine or an ice maker. They will not descale your boiler, your washing machine or your solar heater, because those are fed by water that never passes through the filter. Anyone who tells you otherwise is selling you the wrong thing.',
+      el: 'Ένα φίλτρο Fluux τοποθετείται κάτω από έναν νεροχύτη. Τα μέρη με πολυφωσφορικά μειώνουν τα άλατα μετά το φίλτρο, προστατεύοντας μια μηχανή καφέ ή μια παγομηχανή. Δεν καθαρίζουν τον θερμοσίφωνα, το πλυντήριο ή τον ηλιακό σας, γιατί αυτά τροφοδοτούνται με νερό που δεν περνά ποτέ από το φίλτρο. Όποιος σας λέει το αντίθετο, σας πουλάει λάθος πράγμα.',
+    },
+  },
+  taste: {
+    lead: {
+      en: 'The problem Fluux answers most cleanly. Chlorine is added because it has to be, and removed at the tap because it does not have to stay.',
+      el: 'Το πρόβλημα που λύνει καθαρότερα το Fluux. Το χλώριο προστίθεται επειδή πρέπει, και αφαιρείται στη βρύση επειδή δεν χρειάζεται να μείνει.',
+    },
+    body: {
+      en: [
+        'Water is chlorinated to keep it microbiologically safe on the way to you, through kilometres of pipe in a hot climate. That is not a flaw in the supply — it is the supply working. But chlorine is also why the water tastes of a swimming pool and why tea made with it tastes wrong.',
+        'Activated carbon adsorbs chlorine and the compounds that carry taste and odour. This is the oldest and best understood job in filtration, and it is the one where the difference is immediate and obvious: you notice it in the first glass.',
+      ],
+      el: [
+        'Το νερό χλωριώνεται για να παραμείνει μικροβιολογικά ασφαλές στη διαδρομή προς εσάς, μέσα από χιλιόμετρα σωλήνων σε θερμό κλίμα. Δεν είναι ελάττωμα του δικτύου — έτσι δουλεύει. Όμως το χλώριο είναι και ο λόγος που το νερό θυμίζει πισίνα και το τσάι βγαίνει περίεργο.',
+        'Ο ενεργός άνθρακας προσροφά το χλώριο και τις ενώσεις που δίνουν γεύση και οσμή. Είναι η παλαιότερη και πιο κατανοητή δουλειά στο φιλτράρισμα, και εκείνη όπου η διαφορά είναι άμεση: τη νιώθετε στο πρώτο ποτήρι.',
+      ],
+    },
+    scope: {
+      en: 'Carbon deals with taste, odour and chlorine at the tap it is fitted to. It does not soften the water, and it will not change how your shower feels.',
+      el: 'Ο άνθρακας αντιμετωπίζει γεύση, οσμή και χλώριο στη βρύση όπου τοποθετείται. Δεν αποσκληρύνει το νερό και δεν αλλάζει την αίσθηση στο ντους.',
+    },
+  },
+  bottled: {
+    lead: {
+      en: 'The comparison you are already running in your head. We would rather show you the arithmetic than assert a saving.',
+      el: 'Η σύγκριση που ήδη κάνετε στο μυαλό σας. Προτιμούμε να σας δείξουμε τους υπολογισμούς παρά να ισχυριστούμε μια εξοικονόμηση.',
+    },
+    body: {
+      en: [
+        'A Cypriot household buying bottled water for drinking spends somewhere in the region of two to four hundred euro a year. That figure comes from a property-market source with no interest in selling you a filter, which makes it the best-sourced number on this site.',
+        'Then there is the part that does not appear on a receipt: carrying it, storing it, running out on a Sunday, and the plastic.',
+      ],
+      el: [
+        'Ένα κυπριακό νοικοκυριό που αγοράζει εμφιαλωμένο νερό για πόση ξοδεύει περίπου διακόσια με τετρακόσια ευρώ τον χρόνο. Το στοιχείο προέρχεται από πηγή της αγοράς ακινήτων, χωρίς συμφέρον να σας πουλήσει φίλτρο — γι᾽ αυτό είναι το καλύτερα τεκμηριωμένο νούμερο του ιστότοπου.',
+        'Και μετά υπάρχει το κομμάτι που δεν φαίνεται σε καμία απόδειξη: το κουβάλημα, η αποθήκευση, το να σας τελειώσει Κυριακή, και το πλαστικό.',
+      ],
+    },
+    scope: {
+      en: 'We cannot finish this comparison yet, and we are not going to fake it. The other half needs the cartridge price and the replacement interval, and the manufacturer has not confirmed either. Ask your dealer — they can give you a real annual figure.',
+      el: 'Δεν μπορούμε ακόμα να ολοκληρώσουμε αυτή τη σύγκριση, και δεν θα την πλάσουμε. Το άλλο μισό χρειάζεται την τιμή του φίλτρου και το διάστημα αλλαγής, και ο κατασκευαστής δεν έχει επιβεβαιώσει κανένα από τα δύο. Ρωτήστε τον αντιπρόσωπό σας.',
+    },
+  },
+}[problem];
+---
+<Base locale={locale} routeKey={problem} selfPath={selfPath} altPath={altPath}
+  title={p.title[locale]} description={content.lead[locale]}>
+
+  <PageHeader locale={locale}
+    crumbs={[{ label: en ? 'Water problems' : 'Προβλήματα νερού', key: 'problems' }]}
+    eyebrow={p.symptom[locale]}
+    title={p.title[locale]}
+    lead={content.lead[locale]} />
+
+  <section class="section">
+    <div class="wrap prob">
+      <div class="prose">
+        {content.body[locale].map(par => <p>{par}</p>)}
+
+        <div class={`notice ${p.answers === 'partly' ? 'notice--scope' : ''}`} style="margin-top:var(--space-6)">
+          <p class="notice__title">{en ? 'What Fluux can and cannot do here' : 'Τι μπορεί και τι δεν μπορεί το Fluux εδώ'}</p>
+          <p>{content.scope[locale]}</p>
+        </div>
+      </div>
+
+      <aside class="prob__side">
+        <p class="mono small muted" style="margin-bottom:var(--space-4)">{en ? 'THE NUMBERS' : 'ΤΑ ΣΤΟΙΧΕΙΑ'}</p>
+        {problem === 'limescale' && <>
+          <Readout locale={locale} value={hardness.value} unit={hardness.unit} label={hardness.label[locale]} source={hardness.source[locale]} tier={hardness.tier} />
+          <Readout locale={locale} value={desal.value} unit={desal.unit} label={desal.label[locale]} source={desal.source[locale]} tier={desal.tier} />
+        </>}
+        {problem === 'taste' && <>
+          <Readout locale={locale} value={desal.value} unit={desal.unit} label={desal.label[locale]} source={desal.source[locale]} tier={desal.tier} />
+        </>}
+        {problem === 'bottled' && <>
+          <Readout locale={locale} value={bottled.value} unit={bottled.unit} label={bottled.label[locale]} source={bottled.source[locale]} tier={bottled.tier} />
+        </>}
+        <p class="small muted" style="margin-top:var(--space-4);border-top:1px solid var(--ink-100);padding-top:var(--space-4)">
+          {en ? 'Your own reading is the only one that decides anything, and a dealer will take it free.' : 'Μόνο η δική σας μέτρηση αποφασίζει κάτι, και γίνεται δωρεάν.'}
+        </p>
+        <p style="margin-top:var(--space-4)">
+          <a class="btn btn--primary btn--block" href={path(locale, 'waterTest')}>{t('cta.waterTest.short')}</a>
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <CTABand locale={locale} />
+</Base>
+<style>
+  .prob { display: grid; gap: var(--space-7); }
+  @media (min-width: 960px) { .prob { grid-template-columns: minmax(0,1fr) 300px; gap: var(--space-8); align-items: start; } }
+  .prob__side { border: 1px solid var(--ink-100); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--ink-050); display: grid; gap: var(--space-4); }
+</style>

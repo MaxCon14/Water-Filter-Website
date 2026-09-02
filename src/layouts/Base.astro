@@ -1,0 +1,60 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { htmlLang, path, type Locale, type RouteKey } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  routeKey?: RouteKey;
+  rest?: string[];
+  /** Explicit URLs — used where slugs differ between locales */
+  selfPath?: string;
+  altPath?: string;
+  /** Set false where no translation exists — never emit a mismatched pair (§4.2) */
+  hasAlternate?: boolean;
+}
+const { locale, title, description, routeKey = 'home', rest = [], hasAlternate = true, selfPath, altPath } = Astro.props;
+const site = Astro.site ?? new URL('https://fluux.com.cy');
+const here = new URL(selfPath ?? path(locale, routeKey, ...rest), site).href;
+const there = new URL(altPath ?? path(locale === 'en' ? 'el' : 'en', routeKey, ...rest), site).href;
+const enUrl = locale === 'en' ? here : there;
+const suffix = locale === 'en' ? 'Fluux Cyprus' : 'Fluux Κύπρος';
+---
+<!doctype html>
+<html lang={htmlLang[locale]}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title} | {suffix}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={here} />
+
+  {hasAlternate && (
+    <>
+      <link rel="alternate" hreflang="en-CY" href={locale === 'en' ? here : there} />
+      <link rel="alternate" hreflang="el-CY" href={locale === 'el' ? here : there} />
+      <link rel="alternate" hreflang="x-default" href={enUrl} />
+    </>
+  )}
+
+  <link rel="preload" href={`/fonts/commissioner-${locale === 'el' ? 'greek' : 'latin'}.woff2`} as="font" type="font/woff2" crossorigin />
+  <meta name="theme-color" content="#0C4A64" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:locale" content={locale === 'en' ? 'en_CY' : 'el_CY'} />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <Header locale={locale} routeKey={routeKey} rest={rest} altPath={altPath} />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer locale={locale} />
+  <MobileBar locale={locale} />
+</body>
+</html>

@@ -1,0 +1,48 @@
+---
+import { allPaths } from '../../i18n/manifest';
+import type { Locale } from '../../i18n/ui';
+
+import ProductsHub from '../../components/pages/ProductsHub.astro';
+import Series from '../../components/pages/Series.astro';
+import Sku from '../../components/pages/Sku.astro';
+import Compare from '../../components/pages/Compare.astro';
+import Selector from '../../components/pages/Selector.astro';
+import Problems from '../../components/pages/Problems.astro';
+import Problem from '../../components/pages/Problem.astro';
+import Commercial from '../../components/pages/Commercial.astro';
+import Technology from '../../components/pages/Technology.astro';
+import Certifications from '../../components/pages/Certifications.astro';
+import Dealers from '../../components/pages/Dealers.astro';
+import BecomeDealer from '../../components/pages/BecomeDealer.astro';
+import WaterTest from '../../components/pages/WaterTest.astro';
+import Enquiry from '../../components/pages/Enquiry.astro';
+import About from '../../components/pages/About.astro';
+import Contact from '../../components/pages/Contact.astro';
+import Privacy from '../../components/pages/Privacy.astro';
+import DealerSharing from '../../components/pages/DealerSharing.astro';
+
+export function getStaticPaths() { return allPaths(); }
+
+const { locale, view, extra, selfPath, altPath } = Astro.props as {
+  locale: Locale; view: string; extra: Record<string, string>; selfPath: string; altPath: string;
+};
+const nav = { selfPath, altPath };
+---
+{view === 'products'       && <ProductsHub locale={locale} {...nav} />}
+{view === 'series'         && <Series locale={locale} seriesKey={extra.seriesKey as any} {...nav} />}
+{view === 'sku'            && <Sku locale={locale} sku={extra.sku} {...nav} />}
+{view === 'compare'        && <Compare locale={locale} {...nav} />}
+{view === 'selector'       && <Selector locale={locale} {...nav} />}
+{view === 'problems'       && <Problems locale={locale} {...nav} />}
+{view === 'problem'        && <Problem locale={locale} problem={extra.problem as any} {...nav} />}
+{view === 'commercial'     && <Commercial locale={locale} {...nav} />}
+{view === 'technology'     && <Technology locale={locale} {...nav} />}
+{view === 'certifications' && <Certifications locale={locale} {...nav} />}
+{view === 'dealers'        && <Dealers locale={locale} {...nav} />}
+{view === 'becomeDealer'   && <BecomeDealer locale={locale} {...nav} />}
+{view === 'waterTest'      && <WaterTest locale={locale} {...nav} />}
+{view === 'enquiry'        && <Enquiry locale={locale} {...nav} />}
+{view === 'about'          && <About locale={locale} {...nav} />}
+{view === 'contact'        && <Contact locale={locale} {...nav} />}
+{view === 'privacy'        && <Privacy locale={locale} {...nav} />}
+{view === 'dealerSharing'  && <DealerSharing locale={locale} {...nav} />}

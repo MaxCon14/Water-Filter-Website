@@ -1,0 +1,25 @@
+---
+// No unprefixed routes. Locale chosen client-side from Accept-Language,
+// then remembered. Never geo-redirect on IP (§4.4).
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Fluux Cyprus</title>
+  <meta name="robots" content="noindex" />
+  <link rel="alternate" hreflang="en-CY" href="https://fluux.com.cy/en/" />
+  <link rel="alternate" hreflang="el-CY" href="https://fluux.com.cy/el/" />
+  <link rel="alternate" hreflang="x-default" href="https://fluux.com.cy/en/" />
+  <meta http-equiv="refresh" content="0; url=/en/" />
+  <script is:inline>
+    (function () {
+      var m = document.cookie.match(/(?:^|;\s*)fluux_locale=(en|el)/);
+      var loc = m ? m[1] : ((navigator.language || 'en').toLowerCase().indexOf('el') === 0 ? 'el' : 'en');
+      document.cookie = 'fluux_locale=' + loc + ';path=/;max-age=31536000;SameSite=Lax';
+      location.replace('/' + loc + '/');
+    })();
+  </script>
+</head>
+<body><p>Redirecting to <a href="/en/">English</a> / <a href="/el/">Ελληνικά</a></p></body>
+</html>

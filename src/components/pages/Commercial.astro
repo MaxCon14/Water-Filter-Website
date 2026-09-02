@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import TalkRail from '../TalkRail.astro';
+import { series, bySeries, spec } from '../../data/products';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+const hf2 = bySeries('hf2');
+const sectors = en
+  ? [['Hotels and resorts','Ice, coffee, guest taps and equipment protection across many rooms.'],
+     ['Restaurants and cafés','Espresso quality, ice clarity, and machines that do not fur up in a season.'],
+     ['Offices and clinics','Drinking water at the tap, with certification records for audits.'],
+     ['Developers','Specify point-of-use filtration into a new build once, across every unit.']]
+  : [['Ξενοδοχεία','Πάγος, καφές, βρύσες δωματίων και προστασία εξοπλισμού σε πολλά δωμάτια.'],
+     ['Εστιατόρια και καφέ','Ποιότητα espresso, καθαρός πάγος, και μηχανές που δεν γεμίζουν άλατα σε μια σεζόν.'],
+     ['Γραφεία και κλινικές','Πόσιμο νερό στη βρύση, με αρχεία πιστοποιήσεων για ελέγχους.'],
+     ['Κατασκευαστές','Προδιαγράψτε φιλτράρισμα σημείου χρήσης μία φορά, για κάθε μονάδα.']];
+---
+<Base locale={locale} routeKey="commercial" selfPath={selfPath} altPath={altPath}
+  title={en ? 'For business' : 'Για επιχειρήσεις'}
+  description={en ? 'Commercial water filtration for Cypriot hospitality, foodservice, offices and developers. Fits Everpure and 3M Aqua-Pure heads already installed.' : 'Επαγγελματικό φιλτράρισμα νερού για ξενοδοχεία, εστίαση, γραφεία και κατασκευαστές. Ταιριάζει σε υπάρχουσες κεφαλές Everpure και 3M Aqua-Pure.'}>
+
+  <PageHeader locale={locale}
+    eyebrow={en ? 'For business' : 'Για επιχειρήσεις'}
+    title={en ? 'Same heads. Different cartridge.' : 'Ίδιες κεφαλές. Διαφορετικό φίλτρο.'}
+    lead={en
+      ? 'If your kitchen already runs Everpure or 3M Aqua-Pure, switching to Fluux is a cartridge change — no plumbing, no downtime, no installation cost. That is the entire pitch, and it is worth checking before you renew a supply contract.'
+      : 'Αν η κουζίνα σας λειτουργεί ήδη με Everpure ή 3M Aqua-Pure, η αλλαγή σε Fluux είναι απλή αντικατάσταση φίλτρου — χωρίς υδραυλικά, χωρίς διακοπή, χωρίς κόστος εγκατάστασης.'} />
+
+  <section class="section">
+    <div class="wrap comm">
+      <div>
+        <p class="eyebrow">{en ? 'Sectors' : 'Κλάδοι'}</p>
+        <div class="grid grid--2" style="margin-top:var(--space-5)">
+          {sectors.map(([h, b]) => (
+            <article class="card">
+              <h2 class="card__title" style="font-size:var(--fs-h4)">{h}</h2>
+              <p class="card__body">{b}</p>
+            </article>
+          ))}
+        </div>
+
+        <h2 style="margin-top:var(--space-7)">{en ? 'The commercial line' : 'Η επαγγελματική σειρά'}</h2>
+        <p class="muted small" style="margin-top:var(--space-2);max-width:60ch">
+          {en ? 'HF2 is a 0.5 micron carbon block with scale inhibition, positioned for ice machines and foodservice. Flow is identical across all three — the size buys capacity.'
+              : 'Το HF2 είναι carbon block 0,5 micron με αναστολέα αλάτων, για παγομηχανές και εστίαση. Η παροχή είναι ίδια και στα τρία — το μέγεθος δίνει χωρητικότητα.'}
+        </p>
+        <div class="table-scroll" style="margin-top:var(--space-4)">
+          <table class="spec-table spec-table--compare">
+            <thead><tr>
+              <th scope="col">{en ? 'Model' : 'Μοντέλο'}</th>
+              <th scope="col">{t('spec.capacity')}</th>
+              <th scope="col">{t('spec.flow')}</th>
+              <th scope="col">{t('spec.interval')}</th>
+            </tr></thead>
+            <tbody>
+              {hf2.map(p => (
+                <tr>
+                  <th scope="row" class="mono"><a href={path(locale, 'products', 'hf2', p.sku.toLowerCase())}>{p.sku}</a></th>
+                  <td>{spec(p,'capacity')?.value} L</td>
+                  <td>{spec(p,'flow')?.value} L/min</td>
+                  <td><span class="tier tier--pending">{t('spec.pending')}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="notice notice--warn" style="margin-top:var(--space-5);max-width:64ch">
+          <p class="notice__title">{en ? 'Before you specify anything' : 'Πριν προδιαγράψετε οτιδήποτε'}</p>
+          <p>{en
+            ? 'Every figure on this site comes from distributor listings, not from the manufacturer, and none of it is confirmed. For a tender or a HACCP file you need stamped documentation — ask us and we will get it from source rather than pointing you at this page.'
+            : 'Κάθε στοιχείο σε αυτόν τον ιστότοπο προέρχεται από καταλόγους διανομέων, όχι από τον κατασκευαστή, και κανένα δεν είναι επιβεβαιωμένο. Για διαγωνισμό ή φάκελο HACCP χρειάζεστε επίσημη τεκμηρίωση — ζητήστε την και θα τη φέρουμε από την πηγή.'}</p>
+        </div>
+
+        <h2 style="margin-top:var(--space-7)">{en ? 'Why there is no sizing calculator here' : 'Γιατί δεν υπάρχει εργαλείο διαστασιολόγησης'}</h2>
+        <div class="prose" style="margin-top:var(--space-3)">
+          <p>{en
+            ? 'Commercial sizing depends on peak flow, duty cycle, the equipment you run and the heads already fitted. A four-question wizard cannot get that right, and a confidently wrong answer costs you more than a phone call does. So we ask you to talk to someone instead.'
+            : 'Η διαστασιολόγηση εξαρτάται από την αιχμή παροχής, τον κύκλο λειτουργίας, τον εξοπλισμό και τις υπάρχουσες κεφαλές. Ένα ερωτηματολόγιο τεσσάρων ερωτήσεων δεν τα πιάνει αυτά, και μια λάθος απάντηση με σιγουριά κοστίζει περισσότερο από ένα τηλεφώνημα.'}</p>
+        </div>
+      </div>
+
+      <div class="stack-lg">
+        <TalkRail locale={locale} />
+        <div class="card">
+          <p class="mono small muted">{en ? 'COMMERCIAL ENQUIRY' : 'ΕΠΑΓΓΕΛΜΑΤΙΚΟ ΑΙΤΗΜΑ'}</p>
+          <p style="margin-top:var(--space-3);font-size:var(--fs-small)">
+            {en ? 'Tell us your equipment and current heads and we will come back with a specification and a supply cost.'
+                : 'Πείτε μας τον εξοπλισμό και τις υπάρχουσες κεφαλές και θα επανέλθουμε με προδιαγραφή και κόστος.'}
+          </p>
+          <p style="margin-top:var(--space-4)">
+            <a class="btn btn--primary btn--block" href={`${path(locale, 'enquiry')}?segment=commercial`}>{t('cta.commercial')}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTABand locale={locale}
+    heading={en ? 'Running Everpure now?' : 'Χρησιμοποιείτε Everpure;'}
+    body={en ? 'Send us the model on your current cartridge and we will tell you which Fluux part fits it — or tell you plainly if none does.' : 'Στείλτε μας το μοντέλο του τρέχοντος φίλτρου και θα σας πούμε ποιο Fluux ταιριάζει — ή ότι δεν ταιριάζει κανένα.'} />
+</Base>
+<style>
+  .comm { display: grid; gap: var(--space-7); }
+  @media (min-width: 1024px) { .comm { grid-template-columns: minmax(0,1fr) 300px; gap: var(--space-8); align-items: start; } }
+</style>

@@ -1,0 +1,87 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { locales, path, type Locale, sub } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import { series, bySeries } from '../../data/products';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="products" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Products' : 'Προϊόντα'}
+  description={en ? 'Three filtration technologies and three capacities. Choose the technology for your problem, then the size for how often you want to change it.' : 'Τρεις τεχνολογίες φιλτραρίσματος και τρεις χωρητικότητες. Πρώτα η τεχνολογία για το πρόβλημά σας, μετά το μέγεθος.'}>
+  <PageHeader locale={locale}
+    eyebrow={en ? 'The range' : 'Η γκάμα'}
+    title={en ? 'Two decisions, not nine options.' : 'Δύο αποφάσεις, όχι εννιά επιλογές.'}
+    lead={en
+      ? 'Fluux is a point-of-use cartridge system that fits Everpure and 3M Aqua-Pure heads. Pick the technology that matches your problem, then the size that matches how much water you use.'
+      : 'Το Fluux είναι σύστημα φίλτρων στο σημείο χρήσης που ταιριάζει σε κεφαλές Everpure και 3M Aqua-Pure. Επιλέξτε την τεχνολογία που ταιριάζει στο πρόβλημά σας και μετά το μέγεθος.'} />
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">{en ? 'Step one — the technology' : 'Βήμα ένα — η τεχνολογία'}</p>
+      <div class="grid grid--3" style="margin-top:var(--space-5)">
+        {series.map(s => {
+          const kids = bySeries(s.key);
+          return (
+            <article class="card card--link">
+              <p class="mono small" style="color:var(--signal-600);font-weight:600">{s.name}</p>
+              <h2 class="card__title" style="margin-top:var(--space-2);font-size:var(--fs-h3)">
+                <a href={path(locale, 'products', s.key)}>{s.headline[locale]}</a>
+              </h2>
+              <p class="card__body">{s.summary[locale]}</p>
+              <dl class="mini">
+                <div><dt>{t('spec.technology')}</dt><dd>{s.technology[locale]}</dd></div>
+                <div><dt>{t('spec.micron')}</dt><dd class="mono">{s.micron} µm</dd></div>
+                <div><dt>{en ? 'Sizes' : 'Μεγέθη'}</dt><dd class="mono">{kids.map(k => k.size).join(' · ')}</dd></div>
+              </dl>
+              <p class="card__foot">{en ? 'See the series' : 'Δείτε τη σειρά'} &rarr;</p>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--pale">
+    <div class="wrap">
+      <div class="two">
+        <div>
+          <p class="eyebrow">{en ? 'Step two — the size' : 'Βήμα δύο — το μέγεθος'}</p>
+          <h2 style="margin-top:var(--space-3);max-width:20ch">{en ? 'The size number is not inches.' : 'Ο αριθμός μεγέθους δεν είναι ίντσες.'}</h2>
+          <div class="prose" style="margin-top:var(--space-4)">
+            <p>{en
+              ? 'It is how much water the cartridge treats before it needs replacing. Within a series, 10 to 15 to 17 buys you time between changes — not more flow, and not a finer level of filtration.'
+              : 'Είναι η ποσότητα νερού που επεξεργάζεται το φίλτρο πριν χρειαστεί αλλαγή. Μέσα στην ίδια σειρά, το 10 προς 15 προς 17 σας δίνει χρόνο ανάμεσα στις αλλαγές — όχι μεγαλύτερη παροχή ούτε πιο λεπτό φιλτράρισμα.'}</p>
+            <p>{en
+              ? 'FX-15 and FX-17 have the same flow rate. The only thing the larger one buys is a longer interval. So the question to answer is how much water you use, and how often you want to think about it.'
+              : 'Το FX-15 και το FX-17 έχουν την ίδια παροχή. Το μεγαλύτερο σας δίνει μόνο μεγαλύτερο διάστημα. Άρα η ερώτηση είναι πόσο νερό χρησιμοποιείτε και πόσο συχνά θέλετε να το σκέφτεστε.'}</p>
+          </div>
+        </div>
+        <div class="notice notice--warn">
+          <p class="notice__title">{en ? 'What we cannot tell you yet' : 'Τι δεν μπορούμε ακόμα να σας πούμε'}</p>
+          <p>{en
+            ? 'The replacement interval in months, per cartridge. It is the number that actually matters for a household, and we are not going to estimate it. Book a water test and your dealer will tell you on the day.'
+            : 'Το διάστημα αντικατάστασης σε μήνες, ανά φίλτρο. Είναι ο αριθμός που πραγματικά μετράει για ένα νοικοκυριό, και δεν θα τον υπολογίσουμε κατά προσέγγιση. Κλείστε έλεγχο και ο αντιπρόσωπος θα σας το πει επιτόπου.'}</p>
+        </div>
+      </div>
+      <p style="margin-top:var(--space-6)" class="cluster">
+        <a class="btn btn--secondary" href={path(locale, 'selector')}>{t('cta.findFilter')}</a>
+        <a class="btn btn--ghost" href={path(locale, 'products', sub(locale, 'compare'))}>{t('cta.compare')}</a>
+      </p>
+    </div>
+  </section>
+
+  <CTABand locale={locale} />
+</Base>
+<style>
+  .mini { margin-top: var(--space-4); display: grid; gap: var(--space-2); font-size: var(--fs-small); }
+  .mini > div { display: flex; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--ink-100); }
+  .mini dt { color: var(--ink-500); }
+  .mini dd { margin: 0; color: var(--ink-900); text-align: right; }
+  .two { display: grid; gap: var(--space-6); }
+  @media (min-width: 900px) { .two { grid-template-columns: 1.5fr 1fr; gap: var(--space-8); align-items: start; } }
+</style>

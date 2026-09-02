@@ -1,0 +1,298 @@
+---
+import Base from '../../layouts/Base.astro';
+import { locales, path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import { questions } from '../../data/selector';
+import { products, getSeries } from '../../data/products';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+
+const qs = questions.map(q => ({
+  id: q.id, multi: !!q.multi, title: q.title[locale], hint: q.hint?.[locale] ?? '',
+  options: q.options.map(o => ({ id: o.id, label: o.label[locale], exit: o.exit ?? null })),
+}));
+const cat = Object.fromEntries(products.map(p => {
+  const s = getSeries(p.series);
+  return [p.sku, {
+    sku: p.sku, bestFor: p.bestFor[locale], tech: s.technology[locale],
+    micron: p.specs.find(x => x.key === 'micron')?.value ?? '',
+    capacity: p.specs.find(x => x.key === 'capacity')?.value ?? '',
+    scope: s.scopeNote[locale],
+    href: path(locale, 'products', p.series, p.sku.toLowerCase()),
+  }];
+}));
+---
+<Base locale={locale} routeKey="selector" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Find your filter' : 'Βρες το φίλτρο σου'}
+  description={en ? 'Four questions, about a minute, and a recommendation you are not obliged to take.' : 'Τέσσερις ερωτήσεις, περίπου ένα λεπτό, και μια πρόταση χωρίς καμία δέσμευση.'}>
+
+  <div class="sel-page">
+    <div class="wrap">
+      <div id="sel"
+        data-qs={JSON.stringify(qs)}
+        data-cat={JSON.stringify(cat)}
+        data-enquiry={path(locale, 'enquiry')}
+        data-watertest={path(locale, 'waterTest')}
+        data-commercial={path(locale, 'commercial')}
+        data-copy={JSON.stringify({
+          intro: en ? 'Four questions, about a minute.' : 'Τέσσερις ερωτήσεις, περίπου ένα λεπτό.',
+          introH: en ? 'Let us narrow it down.' : 'Ας το περιορίσουμε.',
+          introBody: en
+            ? 'We will suggest one cartridge and tell you why. A dealer confirms it against your actual water before anything is fitted, so nothing here commits you to anything.'
+            : 'Θα προτείνουμε ένα φίλτρο και θα σας πούμε γιατί. Ένας αντιπρόσωπος το επιβεβαιώνει με βάση το πραγματικό σας νερό πριν τοποθετηθεί οτιδήποτε.',
+          start: en ? 'Start' : 'Ξεκινήστε',
+          step: en ? 'Question' : 'Ερώτηση',
+          of: en ? 'of' : 'από',
+          back: t('cta.back'), next: t('cta.next'), startOver: t('cta.startOver'),
+          pickOne: en ? 'Choose one to continue.' : 'Επιλέξτε ένα για να συνεχίσετε.',
+          resultEyebrow: en ? 'Our suggestion' : 'Η πρότασή μας',
+          because: en ? 'Because you told us:' : 'Επειδή μας είπατε:',
+          alt: en ? 'The alternative' : 'Η εναλλακτική',
+          altWhy: en ? 'Larger capacity, so longer between changes. It filters exactly the same.' : 'Μεγαλύτερη χωρητικότητα, άρα μεγαλύτερα διαστήματα. Φιλτράρει ακριβώς το ίδιο.',
+          altWhySmall: en ? 'Same filtration, shorter interval, smaller cartridge.' : 'Ίδιο φιλτράρισμα, μικρότερο διάστημα, μικρότερο φίλτρο.',
+          pre: en ? 'Add a pre-filter' : 'Προσθέστε προφίλτρο',
+          preWhy: en ? 'You mentioned grit or cloudiness. A sediment cartridge upstream protects the main filter and makes it last longer. Your dealer will confirm whether you need it.' : 'Αναφέρατε ίζημα ή θολότητα. Ένα φίλτρο ιζήματος πριν από το κύριο το προστατεύει και το κάνει να κρατάει περισσότερο.',
+          quote: t('cta.quote'),
+          test: t('cta.waterTest.short'),
+          details: en ? 'Full specification' : 'Πλήρεις προδιαγραφές',
+          scopeTitle: en ? 'What this will not do' : 'Τι δεν θα κάνει αυτό',
+          intervalNote: en ? 'We cannot show you the change interval in months yet — the manufacturer has not confirmed it. Your dealer can tell you on the day.' : 'Δεν μπορούμε ακόμα να δείξουμε το διάστημα αλλαγής σε μήνες — δεν έχει επιβεβαιωθεί από τον κατασκευαστή.',
+          wholeH: en ? 'Honestly? Not this.' : 'Ειλικρινά; Όχι αυτό.',
+          wholeBody: en
+            ? 'Fluux filters water at the tap, which is where you drink it. Whole-house treatment for limescale is a different job and we do not want to sell you the wrong thing. Book a free water test and your dealer will tell you what you actually need — including when that is not us.'
+            : 'Το Fluux φιλτράρει το νερό στη βρύση, εκεί που το πίνετε. Η επεξεργασία ολόκληρου του σπιτιού για άλατα είναι άλλη δουλειά και δεν θέλουμε να σας πουλήσουμε λάθος πράγμα. Κλείστε δωρεάν έλεγχο και ο αντιπρόσωπος θα σας πει τι πραγματικά χρειάζεστε — ακόμα κι αν δεν είμαστε εμείς.',
+          commH: en ? 'A business needs a conversation, not a quiz.' : 'Μια επιχείρηση χρειάζεται συζήτηση, όχι ερωτηματολόγιο.',
+          commBody: en
+            ? 'Commercial sizing depends on peak flow, duty cycle, your equipment and the heads already installed. Four questions cannot get that right, and a confident wrong answer would cost you more than a phone call.'
+            : 'Η διαστασιολόγηση για επιχειρήσεις εξαρτάται από την αιχμή παροχής, τον κύκλο λειτουργίας, τον εξοπλισμό και τις υπάρχουσες κεφαλές. Τέσσερις ερωτήσεις δεν αρκούν.',
+          testH: en ? 'Then let us measure it.' : 'Τότε ας το μετρήσουμε.',
+          testBody: en
+            ? 'Not knowing is the most common answer, and it is the right one to give. A dealer tests your water at your tap, free, and tells you what it shows.'
+            : 'Το «δεν ξέρω» είναι η πιο συνηθισμένη απάντηση, και είναι σωστή. Ένας αντιπρόσωπος ελέγχει το νερό στη βρύση σας, δωρεάν, και σας λέει τι δείχνει.',
+          goComm: en ? 'See commercial options' : 'Δείτε επαγγελματικές λύσεις',
+        })}>
+        <noscript>
+          <div class="notice">
+            <p class="notice__title">{en ? 'This tool needs JavaScript' : 'Το εργαλείο χρειάζεται JavaScript'}</p>
+            <p>{en ? 'You can browse the range directly, or book a free water test and let a dealer work it out with you.' : 'Μπορείτε να δείτε τη γκάμα ή να κλείσετε δωρεάν έλεγχο νερού.'}</p>
+            <p style="margin-top:var(--space-4)">
+              <a class="btn btn--primary btn--sm" href={path(locale, 'waterTest')}>{t('cta.waterTest.short')}</a>
+            </p>
+          </div>
+        </noscript>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .sel-page { padding-block: var(--space-7) var(--space-9); min-height: 70vh; }
+  .sel-page :global(.sel-shell) { max-width: 660px; margin-inline: auto; }
+  .sel-page :global(.sel-prog) { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-6); }
+  .sel-page :global(.sel-prog__bar) { flex: 1; height: 3px; background: var(--ink-100); border-radius: 2px; overflow: hidden; }
+  .sel-page :global(.sel-prog__fill) { height: 100%; background: var(--depth-700); transition: width var(--motion-base) var(--ease); }
+  .sel-page :global(.sel-prog__txt) { font-family: var(--font-mono); font-size: var(--fs-micro); color: var(--ink-500); white-space: nowrap; }
+  .sel-page :global(.sel-q) { font-size: var(--fs-h2); letter-spacing: -0.02em; }
+  .sel-page :global(.sel-hint) { color: var(--ink-500); font-size: var(--fs-small); margin-top: var(--space-2); }
+  .sel-page :global(.sel-opts) { display: grid; gap: var(--space-3); margin-top: var(--space-6); }
+  .sel-page :global(.sel-nav) { display: flex; gap: var(--space-3); margin-top: var(--space-6); align-items: center; flex-wrap: wrap; }
+  .sel-page :global(.sel-err) { color: var(--err-700); font-size: var(--fs-small); font-weight: 500; }
+  .sel-page :global(.sel-res) { border: 1px solid var(--ink-100); border-radius: var(--radius-lg); overflow: hidden; }
+  .sel-page :global(.sel-res__top) { background: var(--depth-700); color: #fff; padding: var(--space-6); }
+  .sel-page :global(.sel-res__sku) { font-family: var(--font-mono); font-size: clamp(1.75rem,1.3rem+1.9vw,2.5rem); font-weight: 600; letter-spacing: -0.03em; }
+  .sel-page :global(.sel-res__body) { padding: var(--space-6); }
+  .sel-page :global(.sel-because) { list-style: none; padding: 0; display: grid; gap: var(--space-2); margin-top: var(--space-3); }
+  .sel-page :global(.sel-because li) { font-size: var(--fs-small); color: var(--ink-700); padding-left: 1.2em; position: relative; }
+  .sel-page :global(.sel-because li::before) { content: '\2713'; position: absolute; left: 0; color: var(--ok-700); }
+  .sel-page :global(.sel-alt) { border-top: 1px solid var(--ink-100); padding: var(--space-5) var(--space-6); background: var(--ink-050); }
+</style>
+
+<script>
+  import { recommend, type Answers } from '../../data/selector';
+
+  const root = document.getElementById('sel');
+  if (root) {
+    const qs = JSON.parse(root.dataset.qs!);
+    const cat = JSON.parse(root.dataset.cat!);
+    const C = JSON.parse(root.dataset.copy!);
+    const urls = { enquiry: root.dataset.enquiry!, test: root.dataset.watertest!, comm: root.dataset.commercial! };
+
+    let step = -1;
+    let answers: Record<string, any> = { problem: [] };
+    let exit: string | null = null;
+    let error = '';
+
+    const esc = (s: string) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+
+    function labelsFor(): string[] {
+      const out: string[] = [];
+      for (const q of qs) {
+        const v = answers[q.id];
+        if (!v || (Array.isArray(v) && !v.length)) continue;
+        const ids = Array.isArray(v) ? v : [v];
+        for (const id of ids) {
+          const o = q.options.find((x: any) => x.id === id);
+          if (o) out.push(o.label);
+        }
+      }
+      return out;
+    }
+
+    function render() {
+      if (exit) return renderExit();
+      if (step === -1) return renderIntro();
+      if (step >= qs.length) return renderResult();
+      renderQuestion();
+    }
+
+    function renderIntro() {
+      root!.innerHTML = `<div class="sel-shell">
+        <p class="eyebrow">${esc(C.intro)}</p>
+        <h1 style="margin-top:var(--space-4);font-size:var(--fs-h1);letter-spacing:-.025em">${esc(C.introH)}</h1>
+        <p class="lead" style="margin-top:var(--space-4)">${esc(C.introBody)}</p>
+        <p style="margin-top:var(--space-6)"><button class="btn btn--primary" id="go">${esc(C.start)}</button></p>
+      </div>`;
+      root!.querySelector('#go')!.addEventListener('click', () => { step = 0; render(); });
+    }
+
+    function renderQuestion() {
+      const q = qs[step];
+      const val = answers[q.id];
+      const chosen = (id: string) => q.multi ? (val || []).includes(id) : val === id;
+      root!.innerHTML = `<div class="sel-shell">
+        <div class="sel-prog">
+          <span class="sel-prog__txt">${esc(C.step)} ${step + 1} ${esc(C.of)} ${qs.length}</span>
+          <span class="sel-prog__bar"><span class="sel-prog__fill" style="width:${((step) / qs.length) * 100}%"></span></span>
+        </div>
+        <fieldset>
+          <legend class="sel-q">${esc(q.title)}</legend>
+          ${q.hint ? `<p class="sel-hint">${esc(q.hint)}</p>` : ''}
+          <div class="sel-opts" role="${q.multi ? 'group' : 'radiogroup'}">
+            ${q.options.map((o: any) => `
+              <label class="choice">
+                <input type="${q.multi ? 'checkbox' : 'radio'}" name="${q.id}" value="${o.id}" ${chosen(o.id) ? 'checked' : ''} />
+                <span class="choice__text"><strong>${esc(o.label)}</strong></span>
+              </label>`).join('')}
+          </div>
+        </fieldset>
+        <div class="sel-nav">
+          <button class="btn btn--primary" id="next">${esc(C.next)}</button>
+          ${step > 0 ? `<button class="btn btn--ghost" id="back">${esc(C.back)}</button>` : ''}
+          ${error ? `<span class="sel-err" role="alert">${esc(error)}</span>` : ''}
+        </div>
+      </div>`;
+
+      root!.querySelectorAll<HTMLInputElement>('input').forEach(inp => {
+        inp.addEventListener('change', () => {
+          error = '';
+          if (q.multi) {
+            const set = new Set<string>(answers[q.id] || []);
+            inp.checked ? set.add(inp.value) : set.delete(inp.value);
+            answers[q.id] = [...set];
+          } else {
+            answers[q.id] = inp.value;
+          }
+        });
+      });
+      root!.querySelector('#next')!.addEventListener('click', () => {
+        const v = answers[q.id];
+        const empty = q.multi ? !v?.length : !v;
+        if (empty) { error = C.pickOne; render(); return; }
+        // Honest exits take priority over any other answer
+        const ids: string[] = q.multi ? v : [v];
+        for (const id of ids) {
+          const o = q.options.find((x: any) => x.id === id);
+          if (o?.exit) { exit = o.exit; render(); return; }
+        }
+        error = ''; step++; render();
+        (document.querySelector('.sel-q') as HTMLElement)?.focus?.();
+      });
+      root!.querySelector('#back')?.addEventListener('click', () => { error = ''; step--; render(); });
+    }
+
+    function renderExit() {
+      const map: Record<string, { h: string; b: string; primary: [string, string]; secondary?: [string, string] }> = {
+        watertest:  { h: C.testH,  b: C.testBody,  primary: [C.test, urls.test] },
+        wholehouse: { h: C.wholeH, b: C.wholeBody, primary: [C.test, urls.test] },
+        commercial: { h: C.commH,  b: C.commBody,  primary: [C.goComm, urls.comm], secondary: [C.test, urls.test] },
+      };
+      const e = map[exit!];
+      root!.innerHTML = `<div class="sel-shell">
+        <p class="eyebrow">${esc(C.resultEyebrow)}</p>
+        <h1 style="margin-top:var(--space-4);font-size:var(--fs-h1);letter-spacing:-.025em">${esc(e.h)}</h1>
+        <p class="lead" style="margin-top:var(--space-4)">${esc(e.b)}</p>
+        <div class="sel-nav">
+          <a class="btn btn--primary" href="${e.primary[1]}">${esc(e.primary[0])}</a>
+          ${e.secondary ? `<a class="btn btn--ghost" href="${e.secondary[1]}">${esc(e.secondary[0])}</a>` : ''}
+          <button class="btn btn--ghost" id="over">${esc(C.startOver)}</button>
+        </div>
+      </div>`;
+      root!.querySelector('#over')!.addEventListener('click', reset);
+    }
+
+    function renderResult() {
+      const rec = recommend(answers as Answers);
+      const main = cat[rec.sku];
+      const alt = rec.alt ? cat[rec.alt] : null;
+      const pre = rec.pre ? cat[rec.pre] : null;
+      const because = labelsFor();
+      const q = new URLSearchParams({ sku: rec.sku, from: 'selector' });
+      if (answers.people) q.set('people', answers.people);
+      if (answers.problem?.length) q.set('concern', answers.problem.join(','));
+
+      const altBigger = alt && Number(alt.capacity.replace(/\D/g, '')) > Number(main.capacity.replace(/\D/g, ''));
+
+      root!.innerHTML = `<div class="sel-shell">
+        <div class="sel-res">
+          <div class="sel-res__top">
+            <p class="eyebrow eyebrow--light">${esc(C.resultEyebrow)}</p>
+            <p class="sel-res__sku" style="margin-top:var(--space-3)">${esc(main.sku)}</p>
+            <p style="margin-top:var(--space-2);color:var(--depth-100)">${esc(main.bestFor)}</p>
+          </div>
+          <div class="sel-res__body">
+            <p class="small" style="font-weight:600;color:var(--ink-900)">${esc(C.because)}</p>
+            <ul class="sel-because">${because.map(b => `<li>${esc(b)}</li>`).join('')}</ul>
+
+            <dl class="mini" style="margin-top:var(--space-5);display:grid;gap:var(--space-2);font-size:var(--fs-small)">
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--ink-100);padding-top:var(--space-2)">
+                <dt style="color:var(--ink-500)">${esc(C.details.includes('Full') ? 'Technology' : 'Τεχνολογία')}</dt><dd style="margin:0">${esc(main.tech)}</dd></div>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--ink-100);padding-top:var(--space-2)">
+                <dt style="color:var(--ink-500)">Filtration</dt><dd style="margin:0" class="mono">${esc(main.micron)} µm</dd></div>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--ink-100);padding-top:var(--space-2)">
+                <dt style="color:var(--ink-500)">Capacity</dt><dd style="margin:0" class="mono">${esc(main.capacity)} L</dd></div>
+            </dl>
+
+            <p class="small muted" style="margin-top:var(--space-3)">${esc(C.intervalNote)}</p>
+
+            <div class="notice notice--scope" style="margin-top:var(--space-5)">
+              <p class="notice__title">${esc(C.scopeTitle)}</p>
+              <p>${esc(main.scope)}</p>
+            </div>
+
+            ${pre ? `<div class="notice" style="margin-top:var(--space-4)">
+              <p class="notice__title">${esc(C.pre)} — ${esc(pre.sku)}</p>
+              <p>${esc(C.preWhy)}</p></div>` : ''}
+
+            <div class="sel-nav">
+              <a class="btn btn--primary" href="${urls.enquiry}?${q}">${esc(C.quote)}</a>
+              <a class="btn btn--ghost" href="${urls.test}">${esc(C.test)}</a>
+            </div>
+            <p style="margin-top:var(--space-4)"><a class="small" href="${main.href}">${esc(C.details)} &rarr;</a></p>
+          </div>
+          ${alt ? `<div class="sel-alt">
+            <p class="mono small muted">${esc(C.alt)}</p>
+            <p style="margin-top:var(--space-2)"><strong class="mono">${esc(alt.sku)}</strong> — ${esc(altBigger ? C.altWhy : C.altWhySmall)}</p>
+            <p style="margin-top:var(--space-2)"><a class="small" href="${alt.href}">${esc(C.details)} &rarr;</a></p>
+          </div>` : ''}
+        </div>
+        <p style="margin-top:var(--space-5)"><button class="btn btn--ghost btn--sm" id="over">${esc(C.startOver)}</button></p>
+      </div>`;
+      root!.querySelector('#over')!.addEventListener('click', reset);
+    }
+
+    function reset() { step = -1; answers = { problem: [] }; exit = null; error = ''; render(); }
+    render();
+  }
+</script>

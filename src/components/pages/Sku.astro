@@ -1,0 +1,144 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import SpecTable from '../SpecTable.astro';
+import { locales, path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import { products, getSeries, bySeries, spec } from '../../data/products';
+
+export function getStaticPaths() {
+  return locales.flatMap(lang => products.map(p => ({
+    params: { lang, series: p.series, sku: p.sku.toLowerCase() },
+    props: { sku: p.sku },
+  })));
+}
+interface Props { locale: Locale; sku: string; selfPath?: string; altPath?: string }
+const { locale, sku, selfPath, altPath } = Astro.props;
+const p = products.find(x => x.sku === sku)!;
+const s = getSeries(p.series);
+const siblings = bySeries(p.series);
+const t = useT(locale);
+const en = locale === 'en';
+const cap = spec(p, 'capacity');
+const flow = spec(p, 'flow');
+const micron = spec(p, 'micron');
+---
+<Base locale={locale} routeKey="products" selfPath={selfPath} altPath={altPath}
+  title={`${p.sku} — ${s.technology[locale]}`}
+  description={`${p.sku}: ${p.bestFor[locale]} ${s.technology[locale]}, ${micron?.value} µm.`}>
+
+  <PageHeader locale={locale}
+    crumbs={[
+      { label: en ? 'Products' : 'Προϊόντα', key: 'products' },
+      { label: s.name, key: 'products', rest: [s.key] },
+    ]}
+    eyebrow={`${s.name} ${en ? 'series' : 'σειρά'}`}
+    title={p.sku}
+    lead={p.bestFor[locale]}>
+    <div class="cluster" style="margin-top:var(--space-5)">
+      <span class="chip">{s.technology[locale]}</span>
+      <span class="chip">{micron?.value} µm</span>
+      {p.audience.map(a => <span class="chip chip--stone">{a === 'domestic' ? (en ? 'Home' : 'Σπίτι') : (en ? 'Business' : 'Επιχείρηση')}</span>)}
+    </div>
+  </PageHeader>
+
+  <section class="section">
+    <div class="wrap sku">
+      <div class="sku__main">
+        <!-- Size selector: labelled by interval, per docs/07 §7.3 -->
+        <div class="sizes" role="group" aria-label={en ? 'Choose a size in this series' : 'Επιλέξτε μέγεθος στη σειρά'}>
+          <p class="mono small muted" style="margin-bottom:var(--space-3)">
+            {en ? 'SIZE — HOW LONG BETWEEN CHANGES' : 'ΜΕΓΕΘΟΣ — ΔΙΑΣΤΗΜΑ ΑΛΛΑΓΗΣ'}
+          </p>
+          <div class="sizes__row">
+            {siblings.map(sib => (
+              <a class={`sizes__opt ${sib.sku === p.sku ? 'is-on' : ''}`}
+                 href={path(locale, 'products', s.key, sib.sku.toLowerCase())}
+                 aria-current={sib.sku === p.sku ? 'page' : undefined}>
+                <span class="mono sizes__sku">{sib.sku}</span>
+                <span class="sizes__cap mono">{spec(sib, 'capacity')?.value ?? '—'} L</span>
+              </a>
+            ))}
+          </div>
+          <p class="small muted" style="margin-top:var(--space-3)">
+            {en ? 'Same filtration in every size. Larger simply lasts longer.'
+                : 'Ίδιο φιλτράρισμα σε κάθε μέγεθος. Το μεγαλύτερο απλώς κρατάει περισσότερο.'}
+          </p>
+        </div>
+
+        <h2 style="margin-top:var(--space-7)">{en ? 'Specification' : 'Προδιαγραφές'}</h2>
+        <div style="margin-top:var(--space-4)"><SpecTable product={p} locale={locale} /></div>
+
+        <!-- Cost transparency — what replaces price (docs/07 §7.3) -->
+        <h2 style="margin-top:var(--space-7)">{en ? 'What it costs' : 'Τι κοστίζει'}</h2>
+        <div class="notice notice--warn" style="margin-top:var(--space-4);max-width:64ch">
+          <p class="notice__title">{en ? 'We are not hiding the price. We do not have it yet.' : 'Δεν κρύβουμε την τιμή. Δεν την έχουμε ακόμα.'}</p>
+          <p>{en
+            ? 'Installed cost genuinely varies — it depends on your plumbing, whether a head is already fitted, and which dealer does the work. But the running cost should not be a mystery, and when we have the cartridge price and the replacement interval confirmed, both will appear here. Until then, ask your dealer directly and they will quote you on the day.'
+            : 'Το κόστος εγκατάστασης όντως διαφέρει — εξαρτάται από τα υδραυλικά σας, από το αν υπάρχει ήδη κεφαλή, και από τον αντιπρόσωπο. Όμως το κόστος χρήσης δεν πρέπει να είναι μυστήριο: μόλις επιβεβαιωθούν η τιμή του φίλτρου και το διάστημα αλλαγής, θα εμφανιστούν εδώ. Μέχρι τότε, ρωτήστε τον αντιπρόσωπό σας.'}</p>
+        </div>
+
+        <h2 style="margin-top:var(--space-7)">{en ? 'Fitting and requirements' : 'Τοποθέτηση και απαιτήσεις'}</h2>
+        <div class="prose" style="margin-top:var(--space-4)">
+          <p>{en
+            ? `${p.sku} is a replacement cartridge. It fits ${s.heads.join(', ')}. If one of those heads is already under your sink, this is a cartridge swap and nothing more.`
+            : `Το ${p.sku} είναι ανταλλακτικό φίλτρο. Ταιριάζει σε ${s.heads.join(', ')}. Αν υπάρχει ήδη τέτοια κεφαλή κάτω από τον νεροχύτη σας, πρόκειται απλώς για αλλαγή φίλτρου.`}</p>
+          <p>{en
+            ? 'If there is no head fitted, a dealer installs one first. That is the part that needs someone with a spanner, and the part a website cannot quote for.'
+            : 'Αν δεν υπάρχει κεφαλή, ο αντιπρόσωπος τοποθετεί πρώτα μία. Αυτό είναι το κομμάτι που θέλει τεχνικό — και που δεν μπορεί να κοστολογηθεί από έναν ιστότοπο.'}</p>
+        </div>
+
+        <div class="notice notice--scope" style="margin-top:var(--space-6);max-width:64ch">
+          <p class="notice__title">{en ? 'Scope' : 'Εμβέλεια'}</p>
+          <p>{s.scopeNote[locale]}</p>
+        </div>
+      </div>
+
+      <!-- Sticky enquiry rail -->
+      <aside class="sku__rail">
+        <div class="rail">
+          <p class="mono small muted">{en ? 'NEXT STEP' : 'ΕΠΟΜΕΝΟ ΒΗΜΑ'}</p>
+          <p style="margin-top:var(--space-3);font-weight:600;color:var(--ink-900)">
+            {en ? 'A dealer confirms this is right for your water before anything is fitted.'
+                : 'Ο αντιπρόσωπος επιβεβαιώνει ότι ταιριάζει στο νερό σας πριν τοποθετηθεί οτιδήποτε.'}
+          </p>
+          <div class="stack-sm" style="margin-top:var(--space-4)">
+            <a class="btn btn--primary btn--block" href={`${path(locale, 'enquiry')}?sku=${p.sku}`}>{t('cta.quote')}</a>
+            <a class="btn btn--ghost btn--block" href={path(locale, 'waterTest')}>{t('cta.waterTest.short')}</a>
+          </div>
+          <p class="small muted" style="margin-top:var(--space-4)">
+            {en ? 'No price and no basket, deliberately. One dealer receives your enquiry, and we tell you which.'
+                : 'Χωρίς τιμή και χωρίς καλάθι, σκόπιμα. Ένας αντιπρόσωπος λαμβάνει το αίτημα, και σας λέμε ποιος.'}
+          </p>
+          <hr style="border:none;border-top:1px solid var(--ink-100);margin-block:var(--space-4)" />
+          <p class="mono small muted">{en ? 'AT A GLANCE' : 'ΜΕ ΜΙΑ ΜΑΤΙΑ'}</p>
+          <dl class="mini" style="margin-top:var(--space-3)">
+            <div><dt>{t('spec.capacity')}</dt><dd class="mono">{cap?.value} {cap?.unit}</dd></div>
+            <div><dt>{t('spec.flow')}</dt><dd class="mono">{flow?.value} {flow?.unit}</dd></div>
+            <div><dt>{t('spec.micron')}</dt><dd class="mono">{micron?.value} µm</dd></div>
+          </dl>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sku { display: grid; gap: var(--space-7); }
+  @media (min-width: 960px) { .sku { grid-template-columns: minmax(0,1fr) 320px; gap: var(--space-8); align-items: start; } }
+  .sku__rail { position: static; }
+  @media (min-width: 960px) { .sku__rail { position: sticky; top: 88px; } }
+  .rail { border: 1px solid var(--ink-100); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--ink-050); }
+
+  .sizes__row { display: grid; gap: var(--space-2); grid-template-columns: repeat(3, 1fr); }
+  .sizes__opt { display: grid; gap: var(--space-1); padding: var(--space-3); border: 1px solid var(--ink-100); border-radius: var(--radius); background: var(--surface); text-decoration: none; text-align: center; }
+  .sizes__opt:hover { border-color: var(--depth-500); }
+  .sizes__opt.is-on { border-color: var(--depth-700); border-width: 2px; background: var(--depth-100); }
+  .sizes__sku { font-weight: 600; color: var(--ink-900); font-size: var(--fs-small); }
+  .sizes__cap { font-size: var(--fs-micro); color: var(--ink-500); }
+
+  .mini { display: grid; gap: var(--space-2); font-size: var(--fs-small); }
+  .mini > div { display: flex; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--ink-100); }
+  .mini dt { color: var(--ink-500); }
+  .mini dd { margin: 0; color: var(--ink-900); }
+</style>

@@ -1,0 +1,29 @@
+---
+import { path, type Locale } from '../i18n/ui';
+import { useT } from '../i18n/strings';
+interface Props { locale: Locale; heading?: string; body?: string }
+const { locale, heading, body } = Astro.props;
+const t = useT(locale);
+const h = heading ?? (locale === 'en' ? 'Not sure what you need?' : 'Δεν είστε σίγουροι τι χρειάζεστε;');
+const b = body ?? (locale === 'en'
+  ? 'Then do not guess, and do not let us guess either. A dealer will test your water and tell you what it actually needs — including when that is nothing from us.'
+  : 'Μην μαντεύετε, και μην μας αφήσετε να μαντέψουμε. Ένας αντιπρόσωπος θα ελέγξει το νερό σας και θα σας πει τι πραγματικά χρειάζεται — ακόμα κι αν αυτό δεν είναι δικό μας προϊόν.');
+---
+<section class="section section--deep">
+  <div class="wrap">
+    <div class="cta-band">
+      <div>
+        <h2>{h}</h2>
+        <p class="lead" style="color:var(--depth-100);margin-top:var(--space-3);max-width:52ch">{b}</p>
+      </div>
+      <div class="cluster">
+        <a class="btn btn--primary" href={path(locale, 'waterTest')}>{t('cta.waterTest')}</a>
+        <a class="btn btn--onDeep" href={path(locale, 'selector')}>{t('cta.findFilter')}</a>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  .cta-band { display: grid; gap: var(--space-5); align-items: end; }
+  @media (min-width: 900px) { .cta-band { grid-template-columns: 1.5fr 1fr; gap: var(--space-7); } }
+</style>

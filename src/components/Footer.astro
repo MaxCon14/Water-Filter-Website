@@ -1,0 +1,67 @@
+---
+import { path, type Locale } from '../i18n/ui';
+import { useT } from '../i18n/strings';
+import { contact } from '../data/site';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = useT(locale);
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div>
+        <a class="brand" href={path(locale, 'home')}>
+          <span class="brand__mark" aria-hidden="true"></span><span>Fluux</span>
+        </a>
+        <p class="small muted" style="margin-top:var(--space-3);max-width:32ch">{t('brand.tagline')}</p>
+      </div>
+
+      <nav aria-label={t('footer.explore')}>
+        <h2 class="site-footer__h">{t('footer.explore')}</h2>
+        <a href={path(locale, 'problems')}>{t('nav.problems')}</a>
+        <a href={path(locale, 'products')}>{t('nav.products')}</a>
+        <a href={path(locale, 'selector')}>{t('nav.selector')}</a>
+        <a href={path(locale, 'commercial')}>{t('nav.commercial')}</a>
+        <a href={path(locale, 'dealers')}>{t('nav.dealers')}</a>
+        <a href={path(locale, 'technology')}>{locale === 'en' ? 'Technology' : 'Τεχνολογία'}</a>
+      </nav>
+
+      <nav aria-label={t('footer.company')}>
+        <h2 class="site-footer__h">{t('footer.company')}</h2>
+        <a href={path(locale, 'about')}>{locale === 'en' ? 'About Fluux' : 'Σχετικά'}</a>
+        <a href={path(locale, 'contact')}>{locale === 'en' ? 'Contact' : 'Επικοινωνία'}</a>
+        <a href={path(locale, 'dealers', 'become-a-dealer')}>{t('footer.becomeDealer')}</a>
+      </nav>
+
+      <nav aria-label={t('footer.legal')}>
+        <h2 class="site-footer__h">{t('footer.legal')}</h2>
+        <a href={path(locale, 'privacy')}>{t('footer.privacy')}</a>
+        <a href={path(locale, 'dealerSharing')}>{t('footer.dealerSharing')}</a>
+      </nav>
+    </div>
+
+    <p class="site-footer__note small">{t('footer.disclaimer')}</p>
+
+    <div class="site-footer__base small muted">
+      <span>© {year} Fluux Cyprus. {t('footer.rights')}</span>
+      <span class="mono">{contact.email}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--ink-900); color: var(--ink-100); padding-block: var(--space-8) var(--space-5); margin-top: var(--space-9); }
+  .site-footer__grid { display: grid; gap: var(--space-6); grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .site-footer__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 960px) { .site-footer__grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+  .brand { display: flex; align-items: center; gap: var(--space-2); color: #fff; text-decoration: none; font-weight: 700; font-size: 1.125rem; }
+  .brand__mark { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid var(--depth-100); border-bottom-color: var(--signal-600); }
+  .site-footer__h { font-size: var(--fs-micro); font-family: var(--font-mono); letter-spacing: 0.08em; color: var(--ink-300); margin-bottom: var(--space-3); font-weight: 500; }
+  .site-footer nav { display: grid; gap: var(--space-2); align-content: start; }
+  .site-footer nav a { color: var(--ink-100); text-decoration: none; font-size: var(--fs-small); }
+  .site-footer nav a:hover { color: #fff; text-decoration: underline; }
+  .site-footer__note { margin-top: var(--space-7); padding-top: var(--space-4); border-top: 1px solid rgba(255,255,255,.12); color: var(--ink-300); max-width: 70ch; }
+  .site-footer__base { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: space-between; margin-top: var(--space-4); color: var(--ink-300); }
+  .site-footer .muted { color: var(--ink-300); }
+</style>

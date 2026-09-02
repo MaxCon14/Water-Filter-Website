@@ -1,0 +1,85 @@
+---
+import { path, localeNames, type Locale, type RouteKey } from '../i18n/ui';
+import { useT } from '../i18n/strings';
+interface Props { locale: Locale; routeKey?: RouteKey; rest?: string[]; altPath?: string }
+const { locale, routeKey = 'home', rest = [], altPath } = Astro.props;
+const t = useT(locale);
+const other: Locale = locale === 'en' ? 'el' : 'en';
+const nav: { key: RouteKey; label: string }[] = [
+  { key: 'problems',   label: t('nav.problems') },
+  { key: 'products',   label: t('nav.products') },
+  { key: 'selector',   label: t('nav.selector') },
+  { key: 'commercial', label: t('nav.commercial') },
+  { key: 'dealers',    label: t('nav.dealers') },
+];
+---
+<a class="skip-link" href="#main">{t('nav.skip')}</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href={path(locale, 'home')} aria-label="Fluux">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__word">Fluux</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      {nav.map(n => <a href={path(locale, n.key)}>{n.label}</a>)}
+    </nav>
+
+    <div class="site-header__end">
+      <a class="locale-switch" href={altPath ?? path(other, routeKey, ...rest)} lang={other === 'en' ? 'en' : 'el'}>
+        <span class="visually-hidden">{t('locale.label')}: </span>{localeNames[other]}
+      </a>
+      <a class="btn btn--primary btn--sm site-header__cta" href={path(locale, 'waterTest')}>
+        {t('cta.waterTest.short')}
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="mobile-nav" data-nav-toggle>
+        <span class="visually-hidden">{t('nav.menu')}</span>
+        <span class="nav-toggle__bars" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" hidden>
+    <nav class="wrap" aria-label="Main">
+      {nav.map(n => <a href={path(locale, n.key)}>{n.label}</a>)}
+      <a href={path(locale, 'contact')}>{t('nav.contact') !== 'nav.contact' ? t('nav.contact') : (locale === 'en' ? 'Contact' : 'Επικοινωνία')}</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--ink-100); }
+  .site-header__inner { display: flex; align-items: center; gap: var(--space-5); min-height: 64px; }
+  .brand { display: flex; align-items: center; gap: var(--space-2); text-decoration: none; color: var(--ink-900); font-weight: 700; font-size: 1.125rem; letter-spacing: -0.02em; flex: none; }
+  .brand__mark { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid var(--depth-700); border-bottom-color: var(--signal-600); }
+  .site-nav { display: none; gap: var(--space-5); flex: 1; }
+  .site-nav a { color: var(--ink-700); text-decoration: none; font-size: var(--fs-small); font-weight: 500; }
+  .site-nav a:hover { color: var(--depth-700); }
+  .site-header__end { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; }
+  .locale-switch { font-family: var(--font-mono); font-size: var(--fs-micro); font-weight: 500; color: var(--ink-700); text-decoration: none; border: 1px solid var(--ink-100); border-radius: var(--radius-sm); padding: 0.35em 0.6em; }
+  .locale-switch:hover { border-color: var(--depth-500); color: var(--depth-700); }
+  .site-header__cta { display: none; }
+  .nav-toggle { display: grid; place-items: center; width: 44px; height: 44px; margin-right: calc(var(--space-2) * -1); }
+  .nav-toggle__bars { display: grid; gap: 5px; }
+  .nav-toggle__bars i { display: block; width: 20px; height: 2px; background: var(--ink-900); }
+  .mobile-nav { border-top: 1px solid var(--ink-100); background: var(--surface); }
+  .mobile-nav nav { display: grid; padding-block: var(--space-3); }
+  .mobile-nav a { padding: var(--space-3) 0; color: var(--ink-900); text-decoration: none; font-weight: 500; border-bottom: 1px solid var(--ink-050); }
+  /* Greek runs ~30% longer — nav collapses later in EN, earlier in EL (§4.8) */
+  @media (min-width: 900px) {
+    .site-nav { display: flex; }
+    .nav-toggle { display: none; }
+    .site-header__cta { display: inline-flex; }
+  }
+  :global([lang^="el"]) .site-nav { gap: var(--space-4); }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const panel = document.getElementById('mobile-nav');
+  btn?.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!open));
+    if (panel) panel.hidden = open;
+  });
+</script>

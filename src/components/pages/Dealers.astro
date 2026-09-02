@@ -1,0 +1,85 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import TalkRail from '../TalkRail.astro';
+import { districts, dealers } from '../../data/site';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="dealers" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Find your dealer' : 'Βρείτε τον αντιπρόσωπό σας'}
+  description={en ? 'Fluux is fitted and serviced by local dealers across the five districts of Cyprus.' : 'Το Fluux τοποθετείται και συντηρείται από τοπικούς αντιπροσώπους στις πέντε επαρχίες.'}>
+
+  <PageHeader locale={locale}
+    eyebrow={en ? 'Dealers' : 'Αντιπρόσωποι'}
+    title={en ? 'A person in your district, not a call centre.' : 'Ένας άνθρωπος στην επαρχία σας, όχι τηλεφωνικό κέντρο.'}
+    lead={en
+      ? 'Your enquiry goes to one dealer. They test, they fit, and they come back when the cartridge needs changing.'
+      : 'Το αίτημά σας πηγαίνει σε έναν αντιπρόσωπο. Ελέγχει, τοποθετεί, και επιστρέφει όταν χρειάζεται αλλαγή φίλτρου.'} />
+
+  <section class="section">
+    <div class="wrap deal">
+      <div>
+        <fieldset>
+          <legend class="field__label">{en ? 'Choose your district' : 'Επιλέξτε επαρχία'}</legend>
+          <div class="deal__districts">
+            {districts.map(d => (
+              <a class="deal__district" href={`${path(locale, 'enquiry')}?district=${d.key}`}>
+                <span>{d.name[locale]}</span>
+                <span class="mono small muted">{en ? 'Enquire' : 'Αίτημα'} &rarr;</span>
+              </a>
+            ))}
+          </div>
+        </fieldset>
+
+        {dealers.length === 0 && (
+          <div class="notice notice--warn" style="margin-top:var(--space-6)">
+            <p class="notice__title">{en ? 'The dealer list is not published yet' : 'Η λίστα αντιπροσώπων δεν έχει δημοσιευτεί'}</p>
+            <p>{en
+              ? 'We are not going to invent names to fill a map. Until the network is confirmed, choose your district above and your enquiry goes straight to Fluux, who will either handle it directly or introduce you to the right installer.'
+              : 'Δεν πρόκειται να επινοήσουμε ονόματα για να γεμίσει ο χάρτης. Μέχρι να επιβεβαιωθεί το δίκτυο, επιλέξτε επαρχία και το αίτημά σας πηγαίνει απευθείας στη Fluux, που θα το αναλάβει ή θα σας συστήσει τον σωστό τεχνικό.'}</p>
+          </div>
+        )}
+
+        <h2 style="margin-top:var(--space-7)">{en ? 'What a dealer commits to' : 'Τι δεσμεύεται ο αντιπρόσωπος'}</h2>
+        <ul class="commit">
+          <li>{en ? 'Contact you within one working day, by the method you chose.' : 'Να επικοινωνήσει εντός μίας εργάσιμης, με τον τρόπο που επιλέξατε.'}</li>
+          <li>{en ? 'Test your water before recommending anything.' : 'Να ελέγξει το νερό σας πριν προτείνει οτιδήποτε.'}</li>
+          <li>{en ? 'Tell you when the answer is not a Fluux product.' : 'Να σας πει όταν η απάντηση δεν είναι προϊόν Fluux.'}</li>
+          <li>{en ? 'Come back when the cartridge is due.' : 'Να επιστρέψει όταν έρθει η ώρα αλλαγής.'}</li>
+        </ul>
+      </div>
+      <TalkRail locale={locale} />
+    </div>
+  </section>
+
+  <section class="section section--pale">
+    <div class="wrap">
+      <div class="two">
+        <div>
+          <h2>{en ? 'No dealer in your district yet?' : 'Δεν υπάρχει ακόμα αντιπρόσωπος στην περιοχή σας;'}</h2>
+          <p class="lead" style="margin-top:var(--space-3);max-width:52ch">
+            {en ? 'Your enquiry still gets answered — it goes to Fluux directly rather than disappearing. And if you install water treatment for a living, that gap is an opening.'
+                : 'Το αίτημά σας θα απαντηθεί ούτως ή άλλως — πηγαίνει απευθείας στη Fluux. Και αν ασχολείστε επαγγελματικά με την επεξεργασία νερού, αυτό το κενό είναι ευκαιρία.'}
+          </p>
+        </div>
+        <p><a class="btn btn--secondary" href={path(locale, 'dealers', 'become-a-dealer')}>{t('footer.becomeDealer')}</a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .deal { display: grid; gap: var(--space-7); }
+  @media (min-width: 960px) { .deal { grid-template-columns: minmax(0,1fr) 300px; gap: var(--space-8); align-items: start; } }
+  .deal__districts { display: grid; gap: var(--space-2); margin-top: var(--space-3); }
+  .deal__district { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--ink-100); border-radius: var(--radius); text-decoration: none; color: var(--ink-900); font-weight: 500; background: var(--surface); }
+  .deal__district:hover { border-color: var(--depth-500); background: var(--ink-050); color: var(--ink-900); }
+  .commit { margin-top: var(--space-4); padding-left: 1.15em; display: grid; gap: var(--space-2); font-size: var(--fs-small); }
+  .two { display: grid; gap: var(--space-5); }
+  @media (min-width: 900px) { .two { grid-template-columns: 1.6fr auto; align-items: center; gap: var(--space-7); } }
+</style>

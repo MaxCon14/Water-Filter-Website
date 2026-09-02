@@ -1,0 +1,211 @@
+---
+import Base from '../layouts/Base.astro';
+import Readout from './Readout.astro';
+import CTABand from './CTABand.astro';
+import { path, type Locale } from '../i18n/ui';
+import { useT } from '../i18n/strings';
+import { problems, facts, districts } from '../data/site';
+import { series } from '../data/products';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+const hardness = facts.find(f => f.id === 'hardness')!;
+const desal = facts.find(f => f.id === 'desal')!;
+const bottled = facts.find(f => f.id === 'bottled')!;
+---
+<Base
+  locale={locale}
+  routeKey="home"
+  title={en ? 'Water filtration for Cyprus, with the evidence attached' : 'Φίλτρα νερού για την Κύπρο, με τα στοιχεία μπροστά'}
+  description={en
+    ? 'Certified point-of-use water filtration, installed and serviced by a local dealer. Book a free water test and find out what is actually in your water.'
+    : 'Πιστοποιημένα φίλτρα νερού στο σημείο χρήσης, με εγκατάσταση και συντήρηση από τοπικό αντιπρόσωπο. Κλείστε δωρεάν έλεγχο και δείτε τι έχει πραγματικά το νερό σας.'}
+>
+  <!-- HERO — the thesis is the measurement, not a product shot -->
+  <section class="hero">
+    <div class="wrap hero__inner">
+      <div class="hero__copy">
+        <p class="eyebrow">{en ? 'Cyprus water, measured' : 'Το νερό της Κύπρου, μετρημένο'}</p>
+        <h1 class="hero__h">
+          {en
+            ? 'Cyprus desalinates most of its drinking water. Your kettle still furs up in a fortnight.'
+            : 'Η Κύπρος αφαλατώνει το περισσότερο πόσιμο νερό της. Ο βραστήρας σας γεμίζει άλατα σε δεκαπέντε μέρες.'}
+        </h1>
+        <p class="lead hero__lead">
+          {en
+            ? 'Minerals are added back after treatment, to protect the pipes. So the water arriving at your tap is still hard, still chlorinated, and still the reason you are buying bottled. Fluux is certified filtration for that water — fitted and serviced by a dealer in your district.'
+            : 'Μετά την επεξεργασία προστίθενται ξανά μέταλλα, για να προστατευθεί το δίκτυο. Έτσι το νερό που φτάνει στη βρύση σας παραμένει σκληρό, χλωριωμένο, και ο λόγος που αγοράζετε εμφιαλωμένο. Το Fluux είναι πιστοποιημένο φιλτράρισμα γι᾽ αυτό το νερό — με τοποθέτηση και συντήρηση από αντιπρόσωπο στην επαρχία σας.'}
+        </p>
+        <div class="cluster hero__cta">
+          <a class="btn btn--primary" href={path(locale, 'waterTest')}>{t('cta.waterTest')}</a>
+          <a class="btn btn--ghost" href={path(locale, 'selector')}>{t('cta.findFilter')}</a>
+        </div>
+        <p class="small muted hero__note">
+          {en ? 'No obligation. One dealer, not five.' : 'Χωρίς δέσμευση. Ένας αντιπρόσωπος, όχι πέντε.'}
+        </p>
+      </div>
+
+      <!-- The signature: an instrument panel, honest about its own sourcing -->
+      <aside class="panel" aria-label={en ? 'Cyprus water at a glance' : 'Το νερό της Κύπρου με μια ματιά'}>
+        <div class="panel__head">
+          <span class="mono panel__title">{en ? 'ISLAND READINGS' : 'ΜΕΤΡΗΣΕΙΣ ΝΗΣΙΟΥ'}</span>
+        </div>
+        <Readout locale={locale} value={desal.value} unit={desal.unit} label={desal.label[locale]} source={desal.source[locale]} tier={desal.tier} />
+        <Readout locale={locale} value={hardness.value} unit={hardness.unit} label={hardness.label[locale]} source={hardness.source[locale]} tier={hardness.tier} />
+        <Readout locale={locale} value={bottled.value} unit={bottled.unit} label={bottled.label[locale]} source={bottled.source[locale]} tier={bottled.tier} />
+        <p class="panel__foot small">
+          {en
+            ? 'We show where every number came from. The hardness figure is from a competitor’s marketing, so treat it as a direction, not a measurement. Yours is the only one that matters — a dealer will take it, free.'
+            : 'Δείχνουμε από πού προέρχεται κάθε αριθμός. Το στοιχείο σκληρότητας προέρχεται από διαφημιστική σελίδα ανταγωνιστή, οπότε δείτε το ως κατεύθυνση, όχι ως μέτρηση. Μόνο η δική σας μέτρηση μετράει — και γίνεται δωρεάν.'}
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- PROBLEM TRIAGE — symptom-led, in the customer's words -->
+  <section class="section section--pale">
+    <div class="wrap">
+      <p class="eyebrow">{en ? 'Start with the symptom' : 'Ξεκινήστε από το σύμπτωμα'}</p>
+      <h2 style="margin-top:var(--space-3);max-width:24ch">
+        {en ? 'What made you look this up?' : 'Τι σας έκανε να το ψάξετε;'}
+      </h2>
+      <div class="grid grid--3" style="margin-top:var(--space-6)">
+        {problems.map(p => (
+          <article class="card card--link">
+            <h3 class="card__title">
+              <a href={path(locale, p.routeKey)}>{p.symptom[locale]}</a>
+            </h3>
+            <p class="card__body">{p.title[locale]}</p>
+            {p.answers === 'partly' && (
+              <p class="card__body" style="margin-top:var(--space-3)">
+                <span class="tier tier--pending">{en ? 'We answer this only in part' : 'Το απαντάμε μόνο εν μέρει'}</span>
+              </p>
+            )}
+            <p class="card__foot">{t('cta.readMore')} &rarr;</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS — pre-empts "am I about to be cold-called" -->
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">{en ? 'How this works' : 'Πώς λειτουργεί'}</p>
+      <h2 style="margin-top:var(--space-3);max-width:26ch">
+        {en ? 'Three steps, and you can stop at any of them.' : 'Τρία βήματα, και μπορείτε να σταματήσετε σε οποιοδήποτε.'}
+      </h2>
+      <ol class="steps">
+        <li>
+          <span class="steps__n mono">01</span>
+          <h3>{en ? 'Tell us about your water' : 'Πείτε μας για το νερό σας'}</h3>
+          <p class="small">{en ? 'Four questions, about a minute. Or just call.' : 'Τέσσερις ερωτήσεις, περίπου ένα λεπτό. Ή απλώς τηλεφωνήστε.'}</p>
+        </li>
+        <li>
+          <span class="steps__n mono">02</span>
+          <h3>{en ? 'A local dealer tests it, free' : 'Τοπικός αντιπρόσωπος το ελέγχει, δωρεάν'}</h3>
+          <p class="small">{en ? 'At your kitchen tap. They explain what they find.' : 'Στη βρύση της κουζίνας σας. Σας εξηγεί τι βρήκε.'}</p>
+        </li>
+        <li>
+          <span class="steps__n mono">03</span>
+          <h3>{en ? 'They quote. You decide.' : 'Δίνει προσφορά. Εσείς αποφασίζετε.'}</h3>
+          <p class="small">{en ? 'Only if you ask for one.' : 'Μόνο αν τη ζητήσετε.'}</p>
+        </li>
+      </ol>
+      <div class="notice" style="margin-top:var(--space-6);max-width:60ch">
+        <p class="notice__title">{en ? 'What does not happen' : 'Τι δεν θα συμβεί'}</p>
+        <p>{en
+          ? 'Your details go to one dealer, and we tell you which one. You will not be called by five companies, because we never sell the same enquiry twice.'
+          : 'Τα στοιχεία σας πηγαίνουν σε έναν αντιπρόσωπο, και σας λέμε σε ποιον. Δεν θα σας καλέσουν πέντε εταιρείες, γιατί ποτέ δεν πουλάμε το ίδιο αίτημα δύο φορές.'}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT FRAMING — problem then capacity, never a 9-cell grid -->
+  <section class="section section--warm">
+    <div class="wrap">
+      <p class="eyebrow">{en ? 'The range' : 'Η γκάμα'}</p>
+      <h2 style="margin-top:var(--space-3);max-width:30ch">
+        {en ? 'Three technologies, each answering a different problem.' : 'Τρεις τεχνολογίες, καθεμιά για διαφορετικό πρόβλημα.'}
+      </h2>
+      <p class="lead" style="margin-top:var(--space-3);max-width:60ch">
+        {en
+          ? 'They are not a good, better, best ladder — that would send a restaurant the wrong cartridge. Pick the technology for your problem first, then the size for how often you want to change it.'
+          : 'Δεν είναι κλίμακα «καλό, καλύτερο, άριστο» — έτσι ένα εστιατόριο θα έπαιρνε λάθος φίλτρο. Πρώτα η τεχνολογία για το πρόβλημά σας, μετά το μέγεθος για το πόσο συχνά θέλετε να το αλλάζετε.'}
+      </p>
+      <div class="grid grid--3" style="margin-top:var(--space-6)">
+        {series.map(s => (
+          <article class="card card--link">
+            <p class="mono small" style="color:var(--signal-600);font-weight:600">{s.name}</p>
+            <h3 class="card__title" style="margin-top:var(--space-2)">
+              <a href={path(locale, 'products', s.key)}>{s.headline[locale]}</a>
+            </h3>
+            <p class="card__body">{s.technology[locale]} · {s.micron} µm</p>
+            <p class="card__foot">{en ? 'See the series' : 'Δείτε τη σειρά'} &rarr;</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- DEALER PROXIMITY -->
+  <section class="section">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <p class="eyebrow">{en ? 'Your district' : 'Η επαρχία σας'}</p>
+          <h2 style="margin-top:var(--space-3);max-width:22ch">
+            {en ? 'Someone local fits it, and comes back when it needs changing.' : 'Κάποιος τοπικός το τοποθετεί, και επιστρέφει όταν χρειάζεται αλλαγή.'}
+          </h2>
+          <p class="lead" style="margin-top:var(--space-4);max-width:52ch">
+            {en
+              ? 'This is the part a website cannot do for you. Water treatment depends on your water, your plumbing and how you use it, which is why there is no price on this site and no basket.'
+              : 'Αυτό είναι το κομμάτι που δεν μπορεί να κάνει ένας ιστότοπος. Η επεξεργασία νερού εξαρτάται από το νερό σας, τις σωληνώσεις σας και τη χρήση — γι᾽ αυτό δεν υπάρχει τιμή ούτε καλάθι εδώ.'}
+          </p>
+          <p style="margin-top:var(--space-5)">
+            <a class="btn btn--secondary" href={path(locale, 'dealers')}>{t('cta.findDealer')}</a>
+          </p>
+        </div>
+        <ul class="districts" aria-label={en ? 'Districts served' : 'Επαρχίες που εξυπηρετούμε'}>
+          {districts.map(d => (
+            <li><a href={path(locale, 'dealers')}>{d.name[locale]}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CTABand locale={locale} />
+</Base>
+
+<style>
+  .hero { padding-block: var(--space-7) var(--space-8); border-bottom: 1px solid var(--ink-100); }
+  @media (min-width: 900px) { .hero { padding-block: var(--space-8) var(--space-9); } }
+  .hero__inner { display: grid; gap: var(--space-7); align-items: start; }
+  @media (min-width: 960px) { .hero__inner { grid-template-columns: 1.35fr 1fr; gap: var(--space-8); } }
+  .hero__h { font-size: var(--fs-display); line-height: var(--lh-display); letter-spacing: -0.028em; margin-top: var(--space-4); max-width: 18ch; }
+  .hero__lead { margin-top: var(--space-5); max-width: 56ch; }
+  .hero__cta { margin-top: var(--space-6); }
+  .hero__note { margin-top: var(--space-3); }
+
+  .panel { border: 1px solid var(--ink-100); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--ink-050); display: grid; gap: var(--space-4); align-content: start; }
+  .panel__head { display: flex; justify-content: space-between; align-items: center; padding-bottom: var(--space-3); border-bottom: 1px solid var(--ink-100); }
+  .panel__title { font-size: var(--fs-micro); letter-spacing: 0.1em; color: var(--ink-500); }
+  .panel__foot { color: var(--ink-500); border-top: 1px solid var(--ink-100); padding-top: var(--space-4); }
+
+  .steps { list-style: none; padding: 0; display: grid; gap: var(--space-5); margin-top: var(--space-6); counter-reset: none; }
+  @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); gap: var(--space-6); } }
+  .steps li { border-top: 2px solid var(--depth-700); padding-top: var(--space-4); }
+  .steps__n { display: block; font-size: var(--fs-micro); color: var(--signal-600); font-weight: 600; letter-spacing: .08em; margin-bottom: var(--space-2); }
+  .steps h3 { font-size: var(--fs-h4); margin-bottom: var(--space-2); }
+
+  .split { display: grid; gap: var(--space-6); }
+  @media (min-width: 900px) { .split { grid-template-columns: 1.4fr 1fr; gap: var(--space-8); align-items: center; } }
+  .districts { list-style: none; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--ink-100); }
+  .districts li { border-bottom: 1px solid var(--ink-100); }
+  .districts a { display: flex; justify-content: space-between; align-items: center; padding: var(--space-4) 0; color: var(--ink-900); text-decoration: none; font-weight: 500; }
+  .districts a::after { content: '\2192'; color: var(--depth-500); }
+  .districts a:hover { color: var(--depth-700); }
+</style>

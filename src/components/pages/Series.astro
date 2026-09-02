@@ -1,0 +1,107 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { locales, path, type Locale, sub } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import { series as allSeries, bySeries, spec } from '../../data/products';
+
+export function getStaticPaths() {
+  return locales.flatMap(lang => allSeries.map(s => ({ params: { lang, series: s.key }, props: { seriesKey: s.key } })));
+}
+interface Props { locale: Locale; seriesKey: 'fx' | 'hf2' | 'h'; selfPath?: string; altPath?: string }
+const { locale, seriesKey, selfPath, altPath } = Astro.props;
+const s = allSeries.find(x => x.key === seriesKey)!;
+const items = bySeries(s.key);
+const t = useT(locale);
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="products" selfPath={selfPath} altPath={altPath}
+  title={`${s.name} — ${s.technology[locale]}`}
+  description={s.summary[locale]}>
+  <PageHeader locale={locale}
+    crumbs={[{ label: en ? 'Products' : 'Προϊόντα', key: 'products' }]}
+    eyebrow={`${en ? 'Series' : 'Σειρά'} ${s.name}`}
+    title={s.headline[locale]}
+    lead={s.summary[locale]}>
+    <div class="cluster" style="margin-top:var(--space-5)">
+      <span class="chip">{s.technology[locale]}</span>
+      <span class="chip">{s.micron} µm</span>
+      {s.audience.map(a => <span class="chip chip--stone">{a === 'domestic' ? (en ? 'Home' : 'Σπίτι') : (en ? 'Business' : 'Επιχείρηση')}</span>)}
+    </div>
+  </PageHeader>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="notice notice--scope" style="max-width:64ch">
+        <p class="notice__title">{en ? 'What this series does not do' : 'Τι δεν κάνει αυτή η σειρά'}</p>
+        <p>{s.scopeNote[locale]}</p>
+      </div>
+
+      <h2 style="margin-top:var(--space-7)">{en ? 'Choose your size' : 'Επιλέξτε μέγεθος'}</h2>
+      <p class="muted small" style="margin-top:var(--space-2);max-width:60ch">
+        {en ? 'Larger sizes treat more water before replacement. They do not filter more finely.'
+            : 'Τα μεγαλύτερα μεγέθη επεξεργάζονται περισσότερο νερό πριν την αλλαγή. Δεν φιλτράρουν πιο λεπτά.'}
+      </p>
+
+      <div class="grid grid--3" style="margin-top:var(--space-5)">
+        {items.map(p => {
+          const cap = spec(p, 'capacity');
+          const flow = spec(p, 'flow');
+          return (
+            <article class="card card--link">
+              <p class="mono" style="font-weight:600;color:var(--ink-900);font-size:var(--fs-h4)">
+                <a href={path(locale, 'products', s.key, p.sku.toLowerCase())} style="text-decoration:none;color:inherit">{p.sku}</a>
+              </p>
+              <p class="card__body" style="margin-top:var(--space-2)">{p.bestFor[locale]}</p>
+              <dl class="mini">
+                <div><dt>{t('spec.capacity')}</dt><dd class="mono">{cap?.value ?? '—'} {cap?.unit ?? ''}</dd></div>
+                <div><dt>{t('spec.flow')}</dt><dd class="mono">{flow?.value ?? '—'} {flow?.unit ?? ''}</dd></div>
+                <div><dt>{t('spec.interval')}</dt><dd><span class="tier tier--pending">{t('spec.pending')}</span></dd></div>
+              </dl>
+              <p class="card__foot">{en ? 'Full specification' : 'Πλήρεις προδιαγραφές'} &rarr;</p>
+            </article>
+          );
+        })}
+      </div>
+
+      <p class="cluster" style="margin-top:var(--space-6)">
+        <a class="btn btn--ghost" href={path(locale, 'products', sub(locale, 'compare'))}>{t('cta.compare')}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--pale">
+    <div class="wrap">
+      <div class="two">
+        <div>
+          <p class="eyebrow">{en ? 'Compatibility' : 'Συμβατότητα'}</p>
+          <h2 style="margin-top:var(--space-3);max-width:22ch">
+            {en ? 'Already have a head? This is the cheap part.' : 'Έχετε ήδη κεφαλή; Αυτό είναι το φθηνό μέρος.'}
+          </h2>
+          <p class="lead" style="margin-top:var(--space-4);max-width:52ch">
+            {en
+              ? 'These are cartridges, not whole systems. If an Everpure or 3M Aqua-Pure head is already fitted, switching to Fluux is a cartridge change — no plumbing, no installation cost.'
+              : 'Πρόκειται για φίλτρα, όχι ολόκληρα συστήματα. Αν υπάρχει ήδη κεφαλή Everpure ή 3M Aqua-Pure, η αλλαγή σε Fluux είναι απλή αντικατάσταση φίλτρου — χωρίς υδραυλικά, χωρίς κόστος εγκατάστασης.'}
+          </p>
+        </div>
+        <div>
+          <p class="mono small muted" style="margin-bottom:var(--space-3)">{t('spec.heads')}</p>
+          <ul class="heads">{s.heads.map(h => <li class="mono">{h}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTABand locale={locale} />
+</Base>
+<style>
+  .mini { margin-top: var(--space-4); display: grid; gap: var(--space-2); font-size: var(--fs-small); }
+  .mini > div { display: flex; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--ink-100); align-items: center; }
+  .mini dt { color: var(--ink-500); }
+  .mini dd { margin: 0; color: var(--ink-900); text-align: right; }
+  .two { display: grid; gap: var(--space-6); }
+  @media (min-width: 900px) { .two { grid-template-columns: 1.4fr 1fr; gap: var(--space-8); align-items: start; } }
+  .heads { list-style: none; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--ink-100); font-size: var(--fs-small); }
+  .heads li { padding: var(--space-3) 0; border-bottom: 1px solid var(--ink-100); color: var(--ink-700); }
+</style>

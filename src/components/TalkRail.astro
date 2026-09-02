@@ -1,0 +1,27 @@
+---
+import { type Locale } from '../i18n/ui';
+import { useT } from '../i18n/strings';
+import { contact } from '../data/site';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<aside class="talk">
+  <p class="mono small muted">{en ? 'OR JUST TALK TO US' : 'Ή ΜΙΛΗΣΤΕ ΜΑΖΙ ΜΑΣ'}</p>
+  <p style="margin-top:var(--space-2);font-weight:600;color:var(--ink-900)">{t('prefer.talk')}</p>
+  <p class="small" style="margin-top:var(--space-2)">{t('prefer.body')}</p>
+  <div class="stack-sm" style="margin-top:var(--space-4)">
+    <a class="btn btn--ghost btn--block" href={`tel:${contact.phoneHref}`}>{t('cta.call')} {contact.phone}</a>
+    <a class="btn btn--ghost btn--block" href={`https://wa.me/${contact.whatsapp}`} rel="noopener">{t('cta.whatsapp')}</a>
+  </div>
+  <p class="small muted" style="margin-top:var(--space-3)">{en ? contact.hoursEn : contact.hoursEl}</p>
+  {contact.placeholder && (
+    <p class="small" style="margin-top:var(--space-3)">
+      <span class="tier tier--pending">{en ? 'Number not yet supplied' : 'Δεν έχει δοθεί αριθμός'}</span>
+    </p>
+  )}
+</aside>
+<style>
+  .talk { border: 1px solid var(--ink-100); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--ink-050); }
+</style>

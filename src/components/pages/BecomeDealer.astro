@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import { districts } from '../../data/site';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="dealers" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Become a Fluux dealer' : 'Γίνετε αντιπρόσωπος Fluux'}
+  description={en ? 'For plumbers, water treatment specialists and appliance retailers across Cyprus.' : 'Για υδραυλικούς, ειδικούς επεξεργασίας νερού και καταστήματα οικιακών συσκευών στην Κύπρο.'}>
+
+  <PageHeader locale={locale} tone="pale"
+    crumbs={[{ label: en ? 'Dealers' : 'Αντιπρόσωποι', key: 'dealers' }]}
+    eyebrow={en ? 'Trade enquiry' : 'Επαγγελματικό αίτημα'}
+    title={en ? 'Fit and service Fluux in your district.' : 'Τοποθετήστε και συντηρήστε Fluux στην επαρχία σας.'}
+    lead={en
+      ? 'We route each customer enquiry to one dealer, not five. That means fewer leads than a shared pool, and a much better chance of closing the ones you get.'
+      : 'Κάθε αίτημα πελάτη πηγαίνει σε έναν αντιπρόσωπο, όχι σε πέντε. Λιγότερα leads από μια κοινή δεξαμενή, αλλά πολύ μεγαλύτερη πιθανότητα να κλείσουν.'} />
+
+  <section class="section">
+    <div class="wrap" style="max-width:720px">
+      <div id="submitted" class="notice" tabindex="-1" hidden style="border-left-color:var(--ok-700);margin-bottom:var(--space-5)">
+        <p class="notice__title">{en ? 'Received — in the demo' : 'Ελήφθη — στην επίδειξη'}</p>
+        <p>{en ? 'This is a demonstration build. Trade enquiries go to Fluux commercial, never into the customer dealer pipeline.' : 'Αυτή είναι έκδοση επίδειξης. Τα επαγγελματικά αιτήματα πηγαίνουν στο εμπορικό τμήμα, ποτέ στη ροή πελατών.'}</p>
+      </div>
+
+      <form data-dealer-form novalidate>
+        <label class="field">
+          <span class="field__label">{en ? 'Company name' : 'Επωνυμία εταιρείας'}</span>
+          <input class="input" type="text" name="company" required autocomplete="organization" />
+        </label>
+        <label class="field">
+          <span class="field__label">{en ? 'Your name and role' : 'Ονοματεπώνυμο και ρόλος'}</span>
+          <input class="input" type="text" name="contact" required autocomplete="name" />
+        </label>
+        <fieldset class="field">
+          <legend class="field__label">{en ? 'Districts you cover' : 'Επαρχίες που καλύπτετε'}</legend>
+          <div class="opts">
+            {districts.map(d => (
+              <label class="choice"><input type="checkbox" name="districts" value={d.key} /><span class="choice__text">{d.name[locale]}</span></label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset class="field">
+          <legend class="field__label">{en ? 'What kind of business' : 'Τύπος επιχείρησης'}</legend>
+          <div class="opts">
+            {(en
+              ? [['plumber','Plumbing'],['water','Water treatment'],['appliance','Appliance retail'],['other','Something else']]
+              : [['plumber','Υδραυλικά'],['water','Επεξεργασία νερού'],['appliance','Οικιακές συσκευές'],['other','Κάτι άλλο']]
+            ).map(([v,l]) => (
+              <label class="choice"><input type="radio" name="kind" value={v} required /><span class="choice__text">{l}</span></label>
+            ))}
+          </div>
+        </fieldset>
+        <label class="field">
+          <span class="field__label">{en ? 'Years trading' : 'Έτη λειτουργίας'}</span>
+          <input class="input" type="text" name="years" inputmode="numeric" />
+        </label>
+        <label class="field">
+          <span class="field__label">{en ? 'Brands you already carry' : 'Μάρκες που ήδη εμπορεύεστε'}</span>
+          <input class="input" type="text" name="brands" />
+        </label>
+        <label class="field">
+          <span class="field__label">{en ? 'Phone' : 'Τηλέφωνο'}</span>
+          <input class="input" type="tel" name="phone" required inputmode="tel" autocomplete="tel" />
+        </label>
+        <label class="field">
+          <span class="field__label">Email</span>
+          <input class="input" type="email" name="email" required inputmode="email" autocomplete="email" />
+        </label>
+        <label class="field">
+          <span class="field__label">{en ? 'Why Fluux?' : 'Γιατί Fluux;'}</span>
+          <textarea class="textarea" name="why"></textarea>
+        </label>
+        <button class="btn btn--primary" type="submit">{en ? 'Send trade enquiry' : 'Αποστολή αιτήματος'}</button>
+      </form>
+    </div>
+  </section>
+</Base>
+<style>
+  .opts { display: grid; gap: var(--space-2); }
+  @media (min-width: 560px) { .opts { grid-template-columns: repeat(2, 1fr); } }
+</style>
+<script>
+  const f = document.querySelector<HTMLFormElement>('[data-dealer-form]');
+  f?.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!f.checkValidity()) { f.querySelector<HTMLElement>(':invalid')?.focus(); return; }
+    const ok = document.getElementById('submitted');
+    f.hidden = true; if (ok) { ok.hidden = false; ok.focus(); }
+  });
+</script>

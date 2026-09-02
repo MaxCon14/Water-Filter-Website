@@ -1,0 +1,57 @@
+---
+import type { Product } from '../data/products';
+import { getSeries } from '../data/products';
+import { useT } from '../i18n/strings';
+import type { Locale } from '../i18n/ui';
+
+interface Props { product: Product; locale: Locale }
+const { product, locale } = Astro.props;
+const t = useT(locale);
+const s = getSeries(product.series);
+
+const labels: Record<string, string> = {
+  technology: t('spec.technology'), micron: t('spec.micron'), flow: t('spec.flow'),
+  capacity: t('spec.capacity'), interval: t('spec.interval'), scale: t('spec.scale'),
+  pressure: locale === 'en' ? 'Operating pressure' : 'Πίεση λειτουργίας',
+  temperature: locale === 'en' ? 'Water temperature' : 'Θερμοκρασία νερού',
+  connection: locale === 'en' ? 'Connection' : 'Σύνδεση',
+};
+---
+<div class="table-scroll">
+  <table class="spec-table">
+    <caption>
+      {locale === 'en'
+        ? 'Every figure below is from a distributor listing, not from the manufacturer. None is confirmed.'
+        : 'Κάθε στοιχείο προέρχεται από καταλόγους διανομέων, όχι από τον κατασκευαστή. Κανένα δεν είναι επιβεβαιωμένο.'}
+    </caption>
+    <tbody>
+      {product.specs.map(sp => (
+        <tr>
+          <th scope="row">{labels[sp.key] ?? sp.key}</th>
+          <td>
+            {sp.value === null ? (
+              <span class="tier tier--pending">{t('spec.pending')}</span>
+            ) : (
+              <>
+                {sp.value}{sp.unit && <span class="muted"> {sp.unit}</span>}
+                {!sp.verified && <span class="tier tier--source" style="margin-left:.6em">{sp.tier}</span>}
+              </>
+            )}
+            {sp.note && <p class="small muted" style="margin-top:var(--space-2);font-family:var(--font-sans)">{sp.note}</p>}
+          </td>
+        </tr>
+      ))}
+      <tr>
+        <th scope="row">{t('spec.heads')}</th>
+        <td style="font-family:var(--font-sans)">{s.heads.join(', ')}</td>
+      </tr>
+      <tr>
+        <th scope="row">{t('spec.certs')}</th>
+        <td style="font-family:var(--font-sans)">
+          {s.certifications.join(', ')}
+          <span class="tier tier--pending" style="margin-left:.6em">{locale === 'en' ? 'Unconfirmed' : 'Ανεπιβεβαίωτο'}</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

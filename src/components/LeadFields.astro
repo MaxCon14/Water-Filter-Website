@@ -1,0 +1,150 @@
+---
+import { type Locale } from '../i18n/ui';
+import { useT } from '../i18n/strings';
+import { districts } from '../data/site';
+interface Props { locale: Locale; variant: 'enquiry' | 'watertest' }
+const { locale, variant } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+
+const property = en
+  ? [['apartment','Apartment'],['house','House'],['villa','Villa'],['other','Something else']]
+  : [['apartment','Διαμέρισμα'],['house','Μονοκατοικία'],['villa','Βίλα'],['other','Κάτι άλλο']];
+const people = [['1-2', en?'One or two':'Ένα ή δύο'],['3-4', en?'Three or four':'Τρία ή τέσσερα'],['5+', en?'Five or more':'Πέντε ή περισσότερα']];
+const concerns = en
+  ? [['chlorine','Taste or smell'],['scale','Limescale'],['safety','Safety'],['bottled','Bottled water cost'],['sediment','Grit or cloudiness'],['unsure','Not sure']]
+  : [['chlorine','Γεύση ή οσμή'],['scale','Άλατα'],['safety','Ασφάλεια'],['bottled','Κόστος εμφιαλωμένου'],['sediment','Ίζημα ή θολότητα'],['unsure','Δεν είμαι σίγουρος']];
+const existing = en
+  ? [['none','No filtration'],['fluux','A Fluux filter'],['other','Another brand'],['unknown','I do not know']]
+  : [['none','Χωρίς φίλτρο'],['fluux','Φίλτρο Fluux'],['other','Άλλη μάρκα'],['unknown','Δεν γνωρίζω']];
+const timeframe = en
+  ? [['asap','As soon as possible'],['month','This month'],['quarter','In the next few months'],['exploring','Just exploring']]
+  : [['asap','Το συντομότερο'],['month','Αυτόν τον μήνα'],['quarter','Τους επόμενους μήνες'],['exploring','Απλώς ενημερώνομαι']];
+const prefs = en
+  ? [['phone','Phone call'],['whatsapp','WhatsApp'],['email','Email']]
+  : [['phone','Τηλεφωνικά'],['whatsapp','WhatsApp'],['email','Email']];
+---
+<!-- Step 1: about the water. Cheap, unthreatening questions first (docs/08 §8.3) -->
+<section class="fstep">
+  <h2 class="fstep__h"><span class="mono fstep__n">01</span>{en ? 'About your water' : 'Για το νερό σας'}</h2>
+
+  <label class="field">
+    <span class="field__label">{t('form.district')}</span>
+    <span class="field__hint">{t('form.district.hint')}</span>
+    <select class="select" name="district" required data-prefill="district">
+      <option value="">{en ? 'Choose your district' : 'Επιλέξτε επαρχία'}</option>
+      {districts.map(d => <option value={d.key}>{d.name[locale]}</option>)}
+    </select>
+  </label>
+
+  <fieldset class="field">
+    <legend class="field__label">{t('form.propertyType')}</legend>
+    <div class="opts opts--row">
+      {property.map(([v, l]) => (
+        <label class="choice"><input type="radio" name="property" value={v} required /><span class="choice__text">{l}</span></label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset class="field">
+    <legend class="field__label">{t('form.occupants')}</legend>
+    <div class="opts opts--row">
+      {people.map(([v, l]) => (
+        <label class="choice"><input type="radio" name="people" value={v} required data-prefill-radio="people" /><span class="choice__text">{l}</span></label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset class="field">
+    <legend class="field__label">{t('form.concern')}</legend>
+    <span class="field__hint">{t('form.concern.hint')}</span>
+    <div class="opts opts--wrap">
+      {concerns.map(([v, l]) => (
+        <label class="choice"><input type="checkbox" name="concern" value={v} data-prefill-check="concern" /><span class="choice__text">{l}</span></label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset class="field">
+    <legend class="field__label">{t('form.existing')}</legend>
+    <span class="field__hint">
+      {en ? 'If you already have an Everpure or 3M head, this is a much smaller job.' : 'Αν έχετε ήδη κεφαλή Everpure ή 3M, η δουλειά είναι πολύ μικρότερη.'}
+    </span>
+    <div class="opts opts--row">
+      {existing.map(([v, l]) => (
+        <label class="choice"><input type="radio" name="existing" value={v} required /><span class="choice__text">{l}</span></label>
+      ))}
+    </div>
+  </fieldset>
+</section>
+
+<!-- Step 2 -->
+<section class="fstep">
+  <h2 class="fstep__h"><span class="mono fstep__n">02</span>{en ? 'What you need' : 'Τι χρειάζεστε'}</h2>
+  <fieldset class="field">
+    <legend class="field__label">{t('form.timeframe')}</legend>
+    <div class="opts opts--row">
+      {timeframe.map(([v, l]) => (
+        <label class="choice"><input type="radio" name="timeframe" value={v} required /><span class="choice__text">{l}</span></label>
+      ))}
+    </div>
+  </fieldset>
+  {variant === 'enquiry' && (
+    <label class="field">
+      <span class="field__label">{en ? 'Product you are interested in' : 'Προϊόν που σας ενδιαφέρει'}</span>
+      <span class="field__hint">{en ? 'Leave blank if you are not sure — that is what the dealer is for.' : 'Αφήστε το κενό αν δεν είστε σίγουροι.'}</span>
+      <input class="input mono" type="text" name="sku" data-prefill="sku" autocomplete="off" />
+    </label>
+  )}
+</section>
+
+<!-- Step 3: contact details LAST — commitment rises with investment -->
+<section class="fstep">
+  <h2 class="fstep__h"><span class="mono fstep__n">03</span>{en ? 'How to reach you' : 'Πώς θα σας βρούμε'}</h2>
+
+  <label class="field">
+    <span class="field__label">{t('form.name')}</span>
+    <input class="input" type="text" name="name" required autocomplete="name" />
+  </label>
+
+  <label class="field">
+    <span class="field__label">{t('form.phone')}</span>
+    <span class="field__hint">{t('form.phone.hint')}</span>
+    <input class="input" type="tel" name="phone" required inputmode="tel" autocomplete="tel" placeholder="+357 " />
+  </label>
+
+  <label class="field">
+    <span class="field__label">{t('form.email')}</span>
+    <span class="field__hint">{t('form.email.optional')}</span>
+    <input class="input" type="email" name="email" inputmode="email" autocomplete="email" />
+  </label>
+
+  {variant === 'watertest' && (
+    <label class="field">
+      <span class="field__label">{en ? 'Address for the visit' : 'Διεύθυνση για την επίσκεψη'}</span>
+      <input class="input" type="text" name="address" autocomplete="street-address" />
+    </label>
+  )}
+
+  <fieldset class="field">
+    <legend class="field__label">{t('form.contactPref')}</legend>
+    <div class="opts opts--row">
+      {prefs.map(([v, l]) => (
+        <label class="choice"><input type="radio" name="contact_pref" value={v} required /><span class="choice__text">{l}</span></label>
+      ))}
+    </div>
+  </fieldset>
+
+  <label class="field">
+    <span class="field__label">{t('form.notes')}</span>
+    <textarea class="textarea" name="notes"></textarea>
+  </label>
+</section>
+
+<style>
+  .fstep + .fstep { margin-top: var(--space-7); padding-top: var(--space-6); border-top: 1px solid var(--ink-100); }
+  .fstep__h { font-size: var(--fs-h3); display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-5); }
+  .fstep__n { font-size: var(--fs-micro); color: var(--signal-600); font-weight: 600; letter-spacing: .08em; }
+  .opts { display: grid; gap: var(--space-2); }
+  @media (min-width: 560px) { .opts--row { grid-template-columns: repeat(2, 1fr); } .opts--wrap { grid-template-columns: repeat(3, 1fr); } }
+</style>

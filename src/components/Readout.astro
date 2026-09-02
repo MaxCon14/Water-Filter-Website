@@ -1,0 +1,17 @@
+---
+/* The signature component. Every number carries its provenance. */
+import type { Locale } from '../i18n/ui';
+interface Props { value: string; unit?: string; label: string; note?: string; tier?: 'A'|'B'|'C'|null; source?: string; locale?: Locale }
+const { value, unit, label, note, tier, source, locale = 'en' } = Astro.props;
+const word = locale === 'el' ? 'Πηγή' : 'Source';
+---
+<div class="readout-block">
+  <div class="readout-block__label">{label}</div>
+  <div class="readout-block__value">{value}{unit && <span class="readout-block__unit">{unit}</span>}</div>
+  {(note || source) && (
+    <p class="readout-block__note">
+      {tier && <span class="tier tier--source" style="margin-right:.5em">{word} {tier}</span>}
+      {source}{source && note ? ' — ' : ''}{note}
+    </p>
+  )}
+</div>

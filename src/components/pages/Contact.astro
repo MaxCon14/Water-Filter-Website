@@ -1,0 +1,58 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import TalkRail from '../TalkRail.astro';
+import { contact } from '../../data/site';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="contact" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Contact' : 'Επικοινωνία'}
+  description={en ? 'Call, message on WhatsApp, or send an enquiry. Plenty of people would rather talk than fill in a form.' : 'Τηλεφωνήστε, στείλτε WhatsApp ή υποβάλετε αίτημα.'}>
+
+  <PageHeader locale={locale}
+    eyebrow={en ? 'Contact' : 'Επικοινωνία'}
+    title={en ? 'Talk to a person.' : 'Μιλήστε με έναν άνθρωπο.'}
+    lead={en ? 'Forms are useful. They are not for everyone, and they are certainly not the fastest way to sort out a commercial requirement.' : 'Οι φόρμες είναι χρήσιμες. Δεν είναι όμως για όλους, και σίγουρα δεν είναι ο γρηγορότερος τρόπος για μια επαγγελματική ανάγκη.'} />
+
+  <section class="section">
+    <div class="wrap contact">
+      <div class="stack-lg">
+        <div>
+          <h2>{en ? 'For your home' : 'Για το σπίτι σας'}</h2>
+          <p class="lead" style="margin-top:var(--space-3);max-width:48ch">
+            {en ? 'The fastest route is a free water test — the dealer comes to you and there is nothing to decide beforehand.' : 'Ο γρηγορότερος δρόμος είναι ένας δωρεάν έλεγχος νερού — ο αντιπρόσωπος έρχεται σε εσάς.'}
+          </p>
+          <p class="cluster" style="margin-top:var(--space-4)">
+            <a class="btn btn--primary" href={path(locale, 'waterTest')}>{t('cta.waterTest')}</a>
+            <a class="btn btn--ghost" href={path(locale, 'enquiry')}>{t('cta.quote')}</a>
+          </p>
+        </div>
+        <div>
+          <h2>{en ? 'For a business' : 'Για επιχειρήσεις'}</h2>
+          <p class="lead" style="margin-top:var(--space-3);max-width:48ch">
+            {en ? 'Tell us your equipment and the heads you already run. That is usually enough for a specification without a site visit.' : 'Πείτε μας τον εξοπλισμό και τις κεφαλές που ήδη χρησιμοποιείτε. Συνήθως αρκεί για μια προδιαγραφή.'}
+          </p>
+          <p style="margin-top:var(--space-4)"><a class="btn btn--secondary" href={path(locale, 'commercial')}>{t('cta.commercial')}</a></p>
+        </div>
+        <div>
+          <h2>{en ? 'Company details' : 'Στοιχεία εταιρείας'}</h2>
+          <p style="margin-top:var(--space-3)"><span class="mono">{contact.email}</span></p>
+          <p class="small" style="margin-top:var(--space-3)">
+            <span class="tier tier--pending">{en ? 'Registration and VAT number pending' : 'Εκκρεμούν αριθμοί μητρώου και ΦΠΑ'}</span>
+          </p>
+        </div>
+      </div>
+      <TalkRail locale={locale} />
+    </div>
+  </section>
+</Base>
+<style>
+  .contact { display: grid; gap: var(--space-7); }
+  @media (min-width: 960px) { .contact { grid-template-columns: minmax(0,1fr) 300px; gap: var(--space-8); align-items: start; } }
+</style>

@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const en = locale === 'en';
+const certs = en
+  ? [['NSF/ANSI 42','Aesthetic effects — chlorine, taste and odour. The standard behind "it stops tasting of the pool".'],
+     ['NSF/ANSI 53','Health effects — cysts, bacteria, and specified organic compounds.'],
+     ['NSF/ANSI 401','Emerging contaminants, including microplastics and trace pharmaceuticals.']]
+  : [['NSF/ANSI 42','Αισθητικά χαρακτηριστικά — χλώριο, γεύση και οσμή. Το πρότυπο πίσω από το «δεν έχει πια γεύση πισίνας».'],
+     ['NSF/ANSI 53','Επιπτώσεις στην υγεία — κύστες, βακτήρια και συγκεκριμένες οργανικές ενώσεις.'],
+     ['NSF/ANSI 401','Αναδυόμενοι ρύποι, όπως μικροπλαστικά και ίχνη φαρμακευτικών ουσιών.']];
+---
+<Base locale={locale} routeKey="technology" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Certifications' : 'Πιστοποιήσεις'}
+  description={en ? 'What NSF/ANSI 42, 53 and 401 actually certify — and why we are not yet printing certificate numbers.' : 'Τι πιστοποιούν πραγματικά τα NSF/ANSI 42, 53 και 401 — και γιατί δεν δημοσιεύουμε ακόμα αριθμούς πιστοποιητικών.'}>
+
+  <PageHeader locale={locale}
+    crumbs={[{ label: en ? 'Technology' : 'Τεχνολογία', key: 'technology' }]}
+    eyebrow={en ? 'Certifications' : 'Πιστοποιήσεις'}
+    title={en ? '"Certified" only means something if you can check it.' : 'Το «πιστοποιημένο» έχει νόημα μόνο αν μπορείτε να το ελέγξετε.'}
+    lead={en
+      ? 'Distributor listings say Fluux carries these three NSF/ANSI certifications. We have not yet seen the certificates, so this page explains the standards rather than claiming them.'
+      : 'Κατάλογοι διανομέων αναφέρουν ότι το Fluux φέρει αυτές τις τρεις πιστοποιήσεις NSF/ANSI. Δεν έχουμε δει ακόμα τα πιστοποιητικά, οπότε αυτή η σελίδα εξηγεί τα πρότυπα αντί να τα διεκδικεί.'} />
+
+  <section class="section">
+    <div class="wrap" style="max-width:70ch">
+      <div class="notice notice--warn">
+        <p class="notice__title">{en ? 'Why there are no certificate numbers here yet' : 'Γιατί δεν υπάρχουν ακόμα αριθμοί πιστοποιητικών'}</p>
+        <p>{en
+          ? 'A certification claim you cannot verify is just a logo. We have asked for the certificate numbers and the issuing records; until they arrive, these standards are described but not asserted for any specific Fluux product. When the documents land, every number will be published here and linked from each product page.'
+          : 'Ένας ισχυρισμός πιστοποίησης που δεν μπορείτε να ελέγξετε είναι απλώς ένα λογότυπο. Έχουμε ζητήσει τους αριθμούς και τα σχετικά αρχεία· μέχρι να έρθουν, τα πρότυπα περιγράφονται αλλά δεν αποδίδονται σε συγκεκριμένο προϊόν Fluux.'}</p>
+      </div>
+
+      <dl class="certs">
+        {certs.map(([k, v]) => (
+          <div>
+            <dt class="mono">{k} <span class="tier tier--pending">{en ? 'Unconfirmed for Fluux' : 'Ανεπιβεβαίωτο για Fluux'}</span></dt>
+            <dd>{v}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <h2 style="margin-top:var(--space-7)">{en ? 'One claim we are specifically not making' : 'Ένας ισχυρισμός που ρητά δεν κάνουμε'}</h2>
+      <div class="prose" style="margin-top:var(--space-3)">
+        <p>{en
+          ? 'One retailer describes Fluux as the world’s first range certified to NSF 401 for microplastics reduction at 0.1 micron. It is a strong claim from a single source, and we have not been able to check it against the NSF listings database. So it is not on this site as a fact, and it will not be until it is verified.'
+          : 'Ένας μεταπωλητής περιγράφει το Fluux ως την πρώτη σειρά παγκοσμίως με πιστοποίηση NSF 401 για μείωση μικροπλαστικών στα 0,1 micron. Είναι ισχυρός ισχυρισμός από μία μόνο πηγή, και δεν μπορέσαμε να τον διασταυρώσουμε. Δεν εμφανίζεται λοιπόν εδώ ως γεγονός.'}</p>
+      </div>
+    </div>
+  </section>
+
+  <CTABand locale={locale} />
+</Base>
+<style>
+  .certs { display: grid; gap: 0; margin-top: var(--space-6); }
+  .certs > div { padding-block: var(--space-4); border-bottom: 1px solid var(--ink-100); }
+  .certs dt { font-weight: 600; color: var(--ink-900); display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .certs dd { margin: var(--space-2) 0 0; font-size: var(--fs-small); }
+</style>

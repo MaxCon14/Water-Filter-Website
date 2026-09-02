@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import CTABand from '../CTABand.astro';
+import { path, type Locale, sub } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import { series } from '../../data/products';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="technology" selfPath={selfPath} altPath={altPath}
+  title={en ? 'How the filtration works' : 'Πώς λειτουργεί το φιλτράρισμα'}
+  description={en ? 'Ultrafiltration, carbon block and scale inhibition — what each one removes, and why a finer micron rating is not automatically better.' : 'Υπερδιήθηση, carbon block και αναστολή αλάτων — τι αφαιρεί το καθένα και γιατί το πιο λεπτό φιλτράρισμα δεν είναι αυτομάτως καλύτερο.'}>
+
+  <PageHeader locale={locale}
+    eyebrow={en ? 'Technology' : 'Τεχνολογία'}
+    title={en ? 'Finer is not automatically better.' : 'Το πιο λεπτό δεν είναι αυτομάτως καλύτερο.'}
+    lead={en
+      ? 'A 0.1 micron membrane and a 0.5 micron carbon block are not two rungs on a ladder. They do different jobs, and a restaurant with an ice machine is usually better served by the "coarser" one.'
+      : 'Μια μεμβράνη 0,1 micron και ένα carbon block 0,5 micron δεν είναι δύο σκαλιά της ίδιας σκάλας. Κάνουν διαφορετικές δουλειές, και ένα εστιατόριο με παγομηχανή συνήθως εξυπηρετείται καλύτερα από το «πιο χονδρό».'} />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="stack-lg" style="max-width:70ch">
+        {series.map(s => (
+          <article class="tech">
+            <div class="tech__mark mono">{s.micron}<span>µm</span></div>
+            <div>
+              <h2>{s.technology[locale]} <span class="mono muted" style="font-size:var(--fs-small)">— {s.name}</span></h2>
+              <p style="margin-top:var(--space-3)">{s.summary[locale]}</p>
+              <p class="small" style="margin-top:var(--space-3);color:var(--ink-500)"><strong>{en ? 'Does not:' : 'Δεν κάνει:'}</strong> {s.scopeNote[locale]}</p>
+              <p style="margin-top:var(--space-3)"><a class="small" href={path(locale, 'products', s.key)}>{en ? 'See the series' : 'Δείτε τη σειρά'} &rarr;</a></p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="notice" style="margin-top:var(--space-7);max-width:66ch">
+        <p class="notice__title">{en ? 'What a micron rating does not tell you' : 'Τι δεν σας λέει ο δείκτης micron'}</p>
+        <p>{en
+          ? 'It describes the size of particle the filter stops. It says nothing about chemical reduction, about how long the cartridge lasts, or about whether it inhibits scale. Those are separate properties, which is why the comparison table lists them separately.'
+          : 'Περιγράφει το μέγεθος σωματιδίου που συγκρατεί το φίλτρο. Δεν λέει τίποτα για τη χημική μείωση, τη διάρκεια του φίλτρου, ή την αναστολή αλάτων. Είναι ξεχωριστές ιδιότητες — γι᾽ αυτό ο πίνακας σύγκρισης τις δείχνει ξεχωριστά.'}</p>
+      </div>
+
+      <p class="cluster" style="margin-top:var(--space-6)">
+        <a class="btn btn--secondary" href={path(locale, 'technology', sub(locale, 'certifications'))}>{en ? 'Certifications' : 'Πιστοποιήσεις'}</a>
+        <a class="btn btn--ghost" href={path(locale, 'products', sub(locale, 'compare'))}>{t('cta.compare')}</a>
+      </p>
+    </div>
+  </section>
+
+  <CTABand locale={locale} />
+</Base>
+<style>
+  .tech { display: grid; gap: var(--space-4); grid-template-columns: 1fr; padding-top: var(--space-5); border-top: 1px solid var(--ink-100); }
+  @media (min-width: 640px) { .tech { grid-template-columns: 96px 1fr; gap: var(--space-6); } }
+  .tech__mark { font-size: 1.75rem; font-weight: 600; color: var(--depth-700); line-height: 1; letter-spacing: -.03em; }
+  .tech__mark span { display: block; font-size: var(--fs-micro); color: var(--ink-500); margin-top: var(--space-1); }
+  .tech h2 { font-size: var(--fs-h3); }
+</style>

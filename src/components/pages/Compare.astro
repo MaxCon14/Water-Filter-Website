@@ -1,0 +1,188 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import { locales, path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+import { products, getSeries } from '../../data/products';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+
+const rows = [
+  { key: 'bestFor',    label: t('spec.bestFor') },
+  { key: 'technology', label: t('spec.technology') },
+  { key: 'micron',     label: t('spec.micron') },
+  { key: 'interval',   label: t('spec.interval') },
+  { key: 'capacity',   label: t('spec.capacity') },
+  { key: 'flow',       label: t('spec.flow') },
+  { key: 'scale',      label: t('spec.scale') },
+  { key: 'heads',      label: t('spec.heads') },
+  { key: 'certs',      label: t('spec.certs') },
+];
+
+// Serialised for the client island
+const data = products.map(p => {
+  const s = getSeries(p.series);
+  const get = (k: string) => p.specs.find(x => x.key === k);
+  return {
+    sku: p.sku, series: s.name, seriesKey: p.series, size: p.size,
+    href: path(locale, 'products', p.series, p.sku.toLowerCase()),
+    values: {
+      bestFor: p.bestFor[locale],
+      technology: get('technology')?.value ?? null,
+      micron: get('micron')?.value ? `${get('micron')!.value} µm` : null,
+      interval: null,
+      capacity: get('capacity')?.value ? `${get('capacity')!.value} L` : null,
+      flow: get('flow')?.value ? `${get('flow')!.value} L/min` : null,
+      scale: get('scale')?.value ?? null,
+      heads: s.heads.join(', '),
+      certs: s.certifications.join(', '),
+    },
+  };
+});
+---
+<Base locale={locale} routeKey="products" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Compare products' : 'Σύγκριση προϊόντων'}
+  description={en ? 'Compare Fluux cartridges side by side. Rows that are identical across every product are collapsed, not padded.' : 'Συγκρίνετε τα φίλτρα Fluux. Οι γραμμές που είναι ίδιες παντού συμπτύσσονται αντί να γεμίζουν χώρο.'}>
+
+  <PageHeader locale={locale}
+    crumbs={[{ label: en ? 'Products' : 'Προϊόντα', key: 'products' }]}
+    eyebrow={en ? 'Compare' : 'Σύγκριση'}
+    title={en ? 'Two or three at a time, honestly.' : 'Δύο ή τρία κάθε φορά, με ειλικρίνεια.'}
+    lead={en
+      ? 'Rows where every product says the same thing are collapsed by default. A comparison table padded with identical rows is designed to look thorough, not to help you choose.'
+      : 'Οι γραμμές όπου όλα τα προϊόντα λένε το ίδιο είναι συμπτυγμένες. Ένας πίνακας γεμάτος πανομοιότυπες γραμμές είναι φτιαγμένος για να φαίνεται πλήρης, όχι για να σας βοηθήσει.'} />
+
+  <section class="section">
+    <div class="wrap">
+      <div id="compare" data-products={JSON.stringify(data)} data-rows={JSON.stringify(rows)}
+           data-labels={JSON.stringify({
+             pick: en ? 'Choose up to three' : 'Επιλέξτε έως τρία',
+             onlyDiff: en ? 'Show only differences' : 'Μόνο οι διαφορές',
+             shared: en ? 'Identical across these products' : 'Ίδια σε αυτά τα προϊόντα',
+             pending: t('spec.pending'),
+             empty: en ? 'Pick at least two products to compare.' : 'Επιλέξτε τουλάχιστον δύο προϊόντα.',
+             quote: t('cta.quote'),
+             view: en ? 'Full details' : 'Πλήρεις λεπτομέρειες',
+             unconfirmed: en ? 'Unconfirmed' : 'Ανεπιβεβαίωτο',
+           })}
+           data-enquiry={path(locale, 'enquiry')}>
+        <noscript>
+          <p class="notice">{en ? 'The comparison tool needs JavaScript. Every specification is also on each product page.' : 'Το εργαλείο σύγκρισης χρειάζεται JavaScript. Όλες οι προδιαγραφές υπάρχουν και στις σελίδες προϊόντων.'}</p>
+        </noscript>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  type Row = { key: string; label: string };
+  type Item = { sku: string; series: string; seriesKey: string; size: string; href: string; values: Record<string, string | null> };
+
+  const root = document.getElementById('compare');
+  if (root) {
+    const items: Item[] = JSON.parse(root.dataset.products!);
+    const rows: Row[] = JSON.parse(root.dataset.rows!);
+    const L = JSON.parse(root.dataset.labels!);
+    const enquiry = root.dataset.enquiry!;
+
+    const params = new URLSearchParams(location.search);
+    let picked = (params.get('skus') || 'FX-15,HF2-15S').split(',').filter(s => items.some(i => i.sku === s)).slice(0, 3);
+    if (picked.length < 2) picked = ['FX-15', 'HF2-15S'];
+    let onlyDiff = false;
+
+    function sync() {
+      const p = new URLSearchParams(location.search);
+      p.set('skus', picked.join(','));
+      history.replaceState(null, '', `${location.pathname}?${p}`);
+    }
+
+    function render() {
+      const sel = picked.map(s => items.find(i => i.sku === s)!).filter(Boolean);
+      const same = (k: string) => sel.length > 1 && sel.every(i => i.values[k] === sel[0].values[k]);
+      const shown = rows.filter(r => !(onlyDiff && same(r.key)));
+      const collapsed = rows.filter(r => same(r.key) && !onlyDiff);
+
+      root!.innerHTML = `
+        <div class="cmp-pick">
+          <fieldset>
+            <legend class="mono small">${L.pick}</legend>
+            <div class="cmp-pick__row">
+              ${items.map(i => `
+                <label class="cmp-chip${picked.includes(i.sku) ? ' is-on' : ''}">
+                  <input type="checkbox" value="${i.sku}" ${picked.includes(i.sku) ? 'checked' : ''}
+                    ${!picked.includes(i.sku) && picked.length >= 3 ? 'disabled' : ''} />
+                  <span class="mono">${i.sku}</span>
+                </label>`).join('')}
+            </div>
+          </fieldset>
+          <label class="cmp-toggle">
+            <input type="checkbox" id="only-diff" ${onlyDiff ? 'checked' : ''} />
+            <span>${L.onlyDiff}</span>
+          </label>
+        </div>
+
+        ${sel.length < 2 ? `<p class="notice">${L.empty}</p>` : `
+        <div class="table-scroll cmp-wrap">
+          <table class="spec-table spec-table--compare">
+            <caption>${L.shared}: ${collapsed.length ? collapsed.map(c => c.label).join(', ') : '—'}</caption>
+            <thead>
+              <tr>
+                <th scope="col"><span class="visually-hidden">Attribute</span></th>
+                ${sel.map(i => `<th scope="col"><span class="mono cmp-h">${i.sku}</span><br /><span class="small muted">${i.series}</span></th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${shown.map(r => `
+                <tr${same(r.key) ? ' class="is-same"' : ''}>
+                  <th scope="row">${r.label}</th>
+                  ${sel.map(i => `<td>${i.values[r.key] === null
+                    ? `<span class="tier tier--pending">${L.pending}</span>`
+                    : `${i.values[r.key]}${r.key === 'certs' ? ` <span class="tier tier--pending">${L.unconfirmed}</span>` : ''}`}</td>`).join('')}
+                </tr>`).join('')}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td></td>
+                ${sel.map(i => `<td><a class="btn btn--primary btn--sm" href="${enquiry}?sku=${i.sku}">${L.quote}</a><br /><a class="small" href="${i.href}">${L.view}</a></td>`).join('')}
+              </tr>
+            </tfoot>
+          </table>
+        </div>`}
+      `;
+
+      root!.querySelectorAll<HTMLInputElement>('.cmp-chip input').forEach(cb => {
+        cb.addEventListener('change', () => {
+          picked = cb.checked ? [...picked, cb.value].slice(0, 3) : picked.filter(s => s !== cb.value);
+          sync(); render();
+        });
+      });
+      const od = root!.querySelector<HTMLInputElement>('#only-diff');
+      od?.addEventListener('change', () => { onlyDiff = od.checked; render(); });
+    }
+    render();
+  }
+</script>
+
+<style is:global>
+  .cmp-pick { display: flex; flex-wrap: wrap; gap: var(--space-5); justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-5); }
+  .cmp-pick fieldset { border: none; padding: 0; }
+  .cmp-pick legend { color: var(--ink-500); letter-spacing: .06em; margin-bottom: var(--space-3); font-weight: 500; }
+  .cmp-pick__row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .cmp-chip { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border: 1px solid var(--ink-100); border-radius: var(--radius); cursor: pointer; font-size: var(--fs-small); background: var(--surface); }
+  .cmp-chip:hover { border-color: var(--depth-500); }
+  .cmp-chip.is-on { border-color: var(--depth-700); background: var(--depth-100); }
+  .cmp-chip:has(input:disabled) { opacity: .45; cursor: not-allowed; }
+  .cmp-chip input { accent-color: var(--depth-700); }
+  .cmp-toggle { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--fs-small); cursor: pointer; }
+  .cmp-toggle input { accent-color: var(--depth-700); width: 16px; height: 16px; }
+  .cmp-h { font-weight: 600; font-size: var(--fs-body); color: var(--ink-900); }
+  /* .table-scroll is overflow-x:auto, which makes it the sticky containing
+     block — so this pins to the wrapper's top edge, not the viewport's.
+     A 64px offset here would push the header down over the first row. */
+  .cmp-wrap { overflow-y: visible; }
+  .cmp-wrap thead th { border-bottom: 2px solid var(--ink-900); position: sticky; top: 0; background: var(--surface); z-index: 2; }
+  .spec-table tr.is-same td, .spec-table tr.is-same th { color: var(--ink-500); }
+  .spec-table tfoot td { padding-top: var(--space-4); font-family: var(--font-sans); }
+</style>

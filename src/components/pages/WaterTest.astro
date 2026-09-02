@@ -1,0 +1,143 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import LeadFields from '../LeadFields.astro';
+import Consent from '../Consent.astro';
+import TalkRail from '../TalkRail.astro';
+import { type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="waterTest" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Book a free water test' : 'Κλείστε δωρεάν έλεγχο νερού'}
+  description={en ? 'A local dealer tests your water at your tap, free, and explains what it shows. No obligation.' : 'Τοπικός αντιπρόσωπος ελέγχει το νερό στη βρύση σας, δωρεάν, και εξηγεί τι δείχνει. Χωρίς δέσμευση.'}>
+
+  <PageHeader locale={locale} tone="pale"
+    eyebrow={en ? 'Free water test' : 'Δωρεάν έλεγχος νερού'}
+    title={en ? 'Find out what is actually in your water.' : 'Δείτε τι έχει πραγματικά το νερό σας.'}
+    lead={en
+      ? 'You do not have to have decided anything. A dealer comes to your tap, measures it, and tells you what the numbers mean — including when the answer is that you do not need us.'
+      : 'Δεν χρειάζεται να έχετε αποφασίσει τίποτα. Ένας αντιπρόσωπος έρχεται στη βρύση σας, μετράει, και σας εξηγεί τι σημαίνουν οι αριθμοί — ακόμα κι αν η απάντηση είναι ότι δεν μας χρειάζεστε.'} />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="wt-steps">
+        <div>
+          <p class="mono small" style="color:var(--signal-600);font-weight:600">01</p>
+          <h2 class="wt-h">{en ? 'They visit' : 'Έρχονται'}</h2>
+          <p class="small">{en ? 'At a time you choose. Usually under half an hour.' : 'Σε ώρα που επιλέγετε. Συνήθως κάτω από μισή ώρα.'}</p>
+        </div>
+        <div>
+          <p class="mono small" style="color:var(--signal-600);font-weight:600">02</p>
+          <h2 class="wt-h">{en ? 'They measure' : 'Μετρούν'}</h2>
+          <p class="small">
+            {en ? 'Hardness, chlorine and dissolved solids at your kitchen tap.' : 'Σκληρότητα, χλώριο και διαλυμένα στερεά στη βρύση σας.'}
+            <br /><span class="tier tier--pending" style="margin-top:var(--space-2)">{en ? 'Exact parameters to be confirmed' : 'Οι ακριβείς παράμετροι εκκρεμούν'}</span>
+          </p>
+        </div>
+        <div>
+          <p class="mono small" style="color:var(--signal-600);font-weight:600">03</p>
+          <h2 class="wt-h">{en ? 'They explain' : 'Εξηγούν'}</h2>
+          <p class="small">{en ? 'What the readings mean. A quote only if you ask for one.' : 'Τι σημαίνουν οι μετρήσεις. Προσφορά μόνο αν τη ζητήσετε.'}</p>
+        </div>
+      </div>
+
+      <div class="notice notice--scope" style="margin-top:var(--space-6);max-width:64ch">
+        <p class="notice__title">{en ? 'What this is not' : 'Τι δεν είναι αυτό'}</p>
+        <p>{en
+          ? 'It is not a sales visit with a test attached. If your water is fine, the dealer will say so. If the problem is one Fluux cannot solve — whole-house limescale, for instance — they will tell you that too.'
+          : 'Δεν είναι επίσκεψη πώλησης με πρόσχημα τον έλεγχο. Αν το νερό σας είναι εντάξει, ο αντιπρόσωπος θα σας το πει. Αν το πρόβλημα δεν λύνεται από το Fluux — π.χ. άλατα σε όλο το σπίτι — θα σας το πει επίσης.'}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--pale">
+    <div class="wrap form-layout">
+      <div>
+        <h2>{en ? 'Book it' : 'Κλείστε ραντεβού'}</h2>
+        <p class="lead" style="margin-top:var(--space-3);max-width:52ch">
+          {en ? 'The shortest form on this site.' : 'Η πιο σύντομη φόρμα του ιστότοπου.'}
+        </p>
+
+        <div id="err-summary" class="notice" tabindex="-1" hidden style="border-left-color:var(--err-700);background:#fdf3f3;margin-block:var(--space-5)" role="alert">
+          <p class="notice__title">{en ? 'Some answers are missing' : 'Λείπουν κάποιες απαντήσεις'}</p>
+          <p><span data-count>0</span> {en ? 'fields still need an answer.' : 'πεδία χρειάζονται απάντηση.'}</p>
+        </div>
+        <div id="submitted" class="notice" tabindex="-1" hidden style="border-left-color:var(--ok-700);margin-block:var(--space-5)">
+          <p class="notice__title">{en ? 'Booked — in the demo, at least' : 'Κλείστηκε — τουλάχιστον στην επίδειξη'}</p>
+          <p>{en ? 'This is a demonstration build, so nothing was sent. On the live site you would get a reference number and the name of your dealer.' : 'Αυτή είναι έκδοση επίδειξης. Στον πραγματικό ιστότοπο θα λαμβάνατε αριθμό αναφοράς και το όνομα του αντιπροσώπου σας.'}</p>
+        </div>
+
+        <form data-lead-form novalidate style="margin-top:var(--space-6)">
+          <LeadFields locale={locale} variant="watertest" />
+          <div style="margin-top:var(--space-7)"><Consent locale={locale} /></div>
+          <div class="submit-row">
+            <button class="btn btn--primary" type="submit">{t('form.submitTest')}</button>
+            <p class="form-note">{t('expect.body')}</p>
+          </div>
+        </form>
+      </div>
+      <TalkRail locale={locale} />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .wt-steps { display: grid; gap: var(--space-5); }
+  @media (min-width: 768px) { .wt-steps { grid-template-columns: repeat(3, 1fr); gap: var(--space-6); } }
+  .wt-steps > div { border-top: 2px solid var(--depth-700); padding-top: var(--space-4); }
+  .wt-h { font-size: var(--fs-h4); margin-block: var(--space-2); }
+  .form-layout { display: grid; gap: var(--space-7); }
+  @media (min-width: 960px) { .form-layout { grid-template-columns: minmax(0,1fr) 300px; gap: var(--space-8); align-items: start; } }
+  .submit-row { margin-top: var(--space-6); display: grid; gap: var(--space-3); }
+</style>
+
+<script>
+  /* Pre-fill from the selector so nothing is ever re-entered (docs/09 §9.8).
+     Pre-filled fields stay visible and editable — a hidden field the customer
+     cannot correct is bad dealer data and a GDPR transparency problem. */
+  const p = new URLSearchParams(location.search);
+  const form = document.querySelector<HTMLFormElement>('[data-lead-form]');
+  if (form) {
+    const set = (sel: string, val: string) => {
+      const el = form.querySelector<HTMLInputElement | HTMLSelectElement>(sel);
+      if (el && val) { el.value = val; el.dataset.prefilled = 'true'; }
+    };
+    set('[data-prefill="sku"]', p.get('sku') || '');
+    set('[data-prefill="district"]', p.get('district') || '');
+    const people = p.get('people');
+    if (people) form.querySelector<HTMLInputElement>(`[data-prefill-radio="people"][value="${CSS.escape(people)}"]`)?.click();
+    for (const c of (p.get('concern') || '').split(',').filter(Boolean)) {
+      form.querySelector<HTMLInputElement>(`[data-prefill-check="concern"][value="${CSS.escape(c)}"]`)?.click();
+    }
+    const banner = document.getElementById('prefill-banner');
+    if (banner && (p.get('from') === 'selector' || p.get('sku'))) banner.hidden = false;
+
+    /* Validate on blur, never on keystroke. Error summary on submit. */
+    const summary = document.getElementById('err-summary');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const bad = [...form.querySelectorAll<HTMLInputElement>(':invalid')];
+      // Count questions, not inputs — a radio group is one missing answer, not four.
+      const groups = new Set(bad.map(el => el.name || el.id));
+      if (bad.length && summary) {
+        summary.hidden = false;
+        summary.querySelector('[data-count]')!.textContent = String(groups.size);
+        summary.focus();
+        bad[0].setAttribute('aria-invalid', 'true');
+        return;
+      }
+      summary && (summary.hidden = true);
+      const ok = document.getElementById('submitted');
+      if (ok) { form.hidden = true; ok.hidden = false; ok.focus(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    });
+    form.querySelectorAll<HTMLInputElement>('input, select, textarea').forEach(el => {
+      el.addEventListener('blur', () => {
+        if (el.value) el.setAttribute('aria-invalid', String(!el.checkValidity()));
+      });
+    });
+  }
+</script>

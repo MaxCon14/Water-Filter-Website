@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="dealerSharing" selfPath={selfPath} altPath={altPath}
+  title={en ? 'How we share your details with a dealer' : 'Πώς μοιραζόμαστε τα στοιχεία σας με αντιπρόσωπο'}
+  description={en ? 'Exactly who receives your enquiry, what they get, what they may do with it, and how to stop it.' : 'Ποιος ακριβώς λαμβάνει το αίτημά σας, τι λαμβάνει, τι επιτρέπεται να κάνει, και πώς να το σταματήσετε.'}>
+
+  <PageHeader locale={locale}
+    eyebrow={en ? 'Privacy' : 'Απόρρητο'}
+    title={en ? 'Where your details go, in plain language.' : 'Πού πηγαίνουν τα στοιχεία σας, με απλά λόγια.'}
+    lead={en
+      ? 'Passing your name and phone number to an independent local business is the single most significant thing this website does with your data. It gets its own page rather than a clause buried in a policy.'
+      : 'Η διαβίβαση του ονόματος και του τηλεφώνου σας σε μια ανεξάρτητη τοπική επιχείρηση είναι το πιο σημαντικό πράγμα που κάνει αυτός ο ιστότοπος με τα δεδομένα σας. Γι᾽ αυτό έχει δική της σελίδα.'} />
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>{en ? 'Who receives it' : 'Ποιος τα λαμβάνει'}</h2>
+      <p>{en
+        ? 'One dealer. Not several. We name them in your confirmation, and if you would rather it went to someone else you can tell us and we will move it.'
+        : 'Ένας αντιπρόσωπος. Όχι περισσότεροι. Τον ονομάζουμε στην επιβεβαίωσή σας, και αν προτιμάτε κάποιον άλλο, μας το λέτε και το αλλάζουμε.'}</p>
+
+      <h2>{en ? 'What they receive' : 'Τι λαμβάνουν'}</h2>
+      <p>{en
+        ? 'Your name, phone number, email if you gave one, district, and the answers you gave about your water and property. Nothing else, and nothing we inferred about you.'
+        : 'Το όνομά σας, το τηλέφωνο, το email αν δώσατε, την επαρχία, και τις απαντήσεις σας για το νερό και το ακίνητό σας. Τίποτα άλλο.'}</p>
+
+      <h2>{en ? 'Why we ask permission rather than assume it' : 'Γιατί ζητάμε άδεια αντί να την υποθέτουμε'}</h2>
+      <p>{en
+        ? 'A dealer is a separate company making its own decisions about your data — in data protection terms, an independent controller, not a supplier acting on our instructions. That means we need your consent for the transfer, specifically and separately, rather than bundling it into a general agreement. It is why the box on the form is unticked and why you have to tick it yourself.'
+        : 'Ο αντιπρόσωπος είναι ξεχωριστή εταιρεία που αποφασίζει η ίδια για τα δεδομένα σας — στη γλώσσα της προστασίας δεδομένων, ανεξάρτητος υπεύθυνος επεξεργασίας. Άρα χρειαζόμαστε τη συγκατάθεσή σας ειδικά για τη διαβίβαση, ξεχωριστά και όχι μαζί με άλλους όρους. Γι᾽ αυτό το κουτάκι στη φόρμα είναι ασυμπλήρωτο.'}</p>
+
+      <h2>{en ? 'What they may not do' : 'Τι δεν επιτρέπεται να κάνουν'}</h2>
+      <ul>
+        <li>{en ? 'Use your details for marketing unrelated to your enquiry.' : 'Να χρησιμοποιήσουν τα στοιχεία σας για μάρκετινγκ άσχετο με το αίτημά σας.'}</li>
+        <li>{en ? 'Pass them to anyone else.' : 'Να τα διαβιβάσουν σε τρίτους.'}</li>
+        <li>{en ? 'Keep them longer than they need to for your enquiry.' : 'Να τα κρατήσουν περισσότερο απ᾽ όσο χρειάζεται.'}</li>
+      </ul>
+      <p>{en
+        ? 'These are contractual obligations in a data sharing agreement, and a dealer who has not signed one does not receive enquiries.'
+        : 'Αυτές είναι συμβατικές υποχρεώσεις σε συμφωνία κοινής χρήσης δεδομένων. Αντιπρόσωπος που δεν την έχει υπογράψει δεν λαμβάνει αιτήματα.'}</p>
+
+      <h2>{en ? 'How long we keep it' : 'Πόσο τα κρατάμε'}</h2>
+      <ul>
+        <li>{en ? 'If you go ahead: seven years, for accounting and warranty.' : 'Αν προχωρήσετε: επτά χρόνια, για λογιστικούς λόγους και εγγύηση.'}</li>
+        <li>{en ? 'If you do not: twenty-four months, then deleted.' : 'Αν δεν προχωρήσετε: είκοσι τέσσερις μήνες, μετά διαγράφονται.'}</li>
+        <li>{en ? 'If no dealer ever contacted you: six months.' : 'Αν δεν επικοινώνησε ποτέ αντιπρόσωπος: έξι μήνες.'}</li>
+      </ul>
+
+      <h2>{en ? 'Changing your mind' : 'Αν αλλάξετε γνώμη'}</h2>
+      <p>{en
+        ? 'Withdrawing consent is as easy as giving it — one link in any email from us, or a phone call. We will tell the dealer, and they are obliged to act on it too.'
+        : 'Η ανάκληση της συγκατάθεσης είναι εξίσου εύκολη με τη χορήγηση — ένας σύνδεσμος σε οποιοδήποτε email μας, ή ένα τηλεφώνημα. Ενημερώνουμε τον αντιπρόσωπο, που υποχρεούται επίσης να συμμορφωθεί.'}</p>
+
+      <div class="notice notice--warn" style="margin-top:var(--space-6)">
+        <p class="notice__title">{en ? 'This is a demonstration build' : 'Αυτή είναι έκδοση επίδειξης'}</p>
+        <p>{en
+          ? 'No data is collected, transmitted or stored by this site as it currently stands. The wording above describes how the live service is designed to work, and needs review by Cyprus-qualified counsel before launch.'
+          : 'Κανένα δεδομένο δεν συλλέγεται, μεταδίδεται ή αποθηκεύεται από αυτόν τον ιστότοπο στην τρέχουσα μορφή του. Το παραπάνω κείμενο περιγράφει τον σχεδιασμό της πραγματικής υπηρεσίας και χρειάζεται νομικό έλεγχο πριν τη δημοσίευση.'}</p>
+      </div>
+    </div>
+  </section>
+</Base>

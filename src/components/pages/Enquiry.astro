@@ -1,0 +1,111 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import LeadFields from '../LeadFields.astro';
+import Consent from '../Consent.astro';
+import TalkRail from '../TalkRail.astro';
+import { type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const t = useT(locale);
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="enquiry" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Request a quote' : 'Ζητήστε προσφορά'}
+  description={en ? 'Tell us about your water and one local dealer will quote. No obligation, and no cold-calling from anyone else.' : 'Πείτε μας για το νερό σας και ένας τοπικός αντιπρόσωπος θα δώσει προσφορά. Χωρίς δέσμευση.'}>
+
+  <PageHeader locale={locale} tone="pale"
+    eyebrow={en ? 'Request a quote' : 'Αίτημα προσφοράς'}
+    title={en ? 'Enough detail that your dealer can quote without a discovery call.' : 'Αρκετές πληροφορίες ώστε ο αντιπρόσωπος να δώσει προσφορά χωρίς προκαταρκτική κλήση.'}
+    lead={en
+      ? 'That is the whole point of the questions below. Every field is here because it saves you a phone call, not because a form needed filling.'
+      : 'Αυτός είναι ο σκοπός των ερωτήσεων. Κάθε πεδίο υπάρχει επειδή σας γλιτώνει ένα τηλεφώνημα.'} />
+
+  <section class="section">
+    <div class="wrap form-layout">
+      <div>
+        <div id="prefill-banner" class="notice" hidden>
+          <p class="notice__title">{en ? 'We carried your answers over' : 'Μεταφέραμε τις απαντήσεις σας'}</p>
+          <p>{en ? 'Everything below is editable — change anything that is not right.' : 'Όλα παρακάτω είναι επεξεργάσιμα — αλλάξτε ό,τι δεν είναι σωστό.'}</p>
+        </div>
+
+        <div id="err-summary" class="notice" tabindex="-1" hidden style="border-left-color:var(--err-700);background:#fdf3f3;margin-bottom:var(--space-5)" role="alert">
+          <p class="notice__title">{en ? 'Some answers are missing' : 'Λείπουν κάποιες απαντήσεις'}</p>
+          <p><span data-count>0</span> {en ? 'fields still need an answer. They are marked below.' : 'πεδία χρειάζονται απάντηση. Είναι σημειωμένα παρακάτω.'}</p>
+        </div>
+
+        <div id="submitted" class="notice" tabindex="-1" hidden style="border-left-color:var(--ok-700)">
+          <p class="notice__title">{en ? 'That is everything we need' : 'Αυτά είναι όλα όσα χρειαζόμαστε'}</p>
+          <p>{en
+            ? 'This is a demonstration build, so nothing was actually sent. On the live site you would now see your reference number, the name of the one dealer receiving this, and when to expect them.'
+            : 'Αυτή είναι έκδοση επίδειξης, οπότε δεν στάλθηκε τίποτα. Στον πραγματικό ιστότοπο θα βλέπατε τον αριθμό αναφοράς σας, το όνομα του αντιπροσώπου και πότε να τον περιμένετε.'}</p>
+        </div>
+
+        <form data-lead-form novalidate>
+          <LeadFields locale={locale} variant="enquiry" />
+          <div style="margin-top:var(--space-7)"><Consent locale={locale} /></div>
+          <div class="submit-row">
+            <button class="btn btn--primary" type="submit">{t('form.submit')}</button>
+            <p class="form-note">{t('expect.body')}</p>
+          </div>
+        </form>
+      </div>
+      <TalkRail locale={locale} />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .form-layout { display: grid; gap: var(--space-7); }
+  @media (min-width: 960px) { .form-layout { grid-template-columns: minmax(0,1fr) 300px; gap: var(--space-8); align-items: start; } }
+  .submit-row { margin-top: var(--space-6); display: grid; gap: var(--space-3); }
+  .submit-row .form-note { max-width: 52ch; }
+</style>
+
+<script>
+  /* Pre-fill from the selector so nothing is ever re-entered (docs/09 §9.8).
+     Pre-filled fields stay visible and editable — a hidden field the customer
+     cannot correct is bad dealer data and a GDPR transparency problem. */
+  const p = new URLSearchParams(location.search);
+  const form = document.querySelector<HTMLFormElement>('[data-lead-form]');
+  if (form) {
+    const set = (sel: string, val: string) => {
+      const el = form.querySelector<HTMLInputElement | HTMLSelectElement>(sel);
+      if (el && val) { el.value = val; el.dataset.prefilled = 'true'; }
+    };
+    set('[data-prefill="sku"]', p.get('sku') || '');
+    set('[data-prefill="district"]', p.get('district') || '');
+    const people = p.get('people');
+    if (people) form.querySelector<HTMLInputElement>(`[data-prefill-radio="people"][value="${CSS.escape(people)}"]`)?.click();
+    for (const c of (p.get('concern') || '').split(',').filter(Boolean)) {
+      form.querySelector<HTMLInputElement>(`[data-prefill-check="concern"][value="${CSS.escape(c)}"]`)?.click();
+    }
+    const banner = document.getElementById('prefill-banner');
+    if (banner && (p.get('from') === 'selector' || p.get('sku'))) banner.hidden = false;
+
+    /* Validate on blur, never on keystroke. Error summary on submit. */
+    const summary = document.getElementById('err-summary');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const bad = [...form.querySelectorAll<HTMLInputElement>(':invalid')];
+      // Count questions, not inputs — a radio group is one missing answer, not four.
+      const groups = new Set(bad.map(el => el.name || el.id));
+      if (bad.length && summary) {
+        summary.hidden = false;
+        summary.querySelector('[data-count]')!.textContent = String(groups.size);
+        summary.focus();
+        bad[0].setAttribute('aria-invalid', 'true');
+        return;
+      }
+      summary && (summary.hidden = true);
+      const ok = document.getElementById('submitted');
+      if (ok) { form.hidden = true; ok.hidden = false; ok.focus(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    });
+    form.querySelectorAll<HTMLInputElement>('input, select, textarea').forEach(el => {
+      el.addEventListener('blur', () => {
+        if (el.value) el.setAttribute('aria-invalid', String(!el.checkValidity()));
+      });
+    });
+  }
+</script>

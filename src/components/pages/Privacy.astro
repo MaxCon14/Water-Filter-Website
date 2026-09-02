@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../PageHeader.astro';
+import { path, type Locale } from '../../i18n/ui';
+import { useT } from '../../i18n/strings';
+interface Props { locale: Locale; selfPath?: string; altPath?: string }
+const { locale, selfPath, altPath } = Astro.props;
+const en = locale === 'en';
+---
+<Base locale={locale} routeKey="privacy" selfPath={selfPath} altPath={altPath}
+  title={en ? 'Privacy policy' : 'Πολιτική απορρήτου'}
+  description={en ? 'What this site collects, what it does not, and your rights under the GDPR.' : 'Τι συλλέγει αυτός ο ιστότοπος, τι δεν συλλέγει, και τα δικαιώματά σας βάσει GDPR.'}>
+
+  <PageHeader locale={locale}
+    eyebrow={en ? 'Legal' : 'Νομικά'}
+    title={en ? 'Privacy policy' : 'Πολιτική απορρήτου'}
+    lead={en ? 'Short, because this site does very little with your data.' : 'Σύντομη, γιατί αυτός ο ιστότοπος κάνει πολύ λίγα με τα δεδομένα σας.'} />
+
+  <section class="section">
+    <div class="wrap prose">
+      <div class="notice notice--warn">
+        <p class="notice__title">{en ? 'Demonstration build' : 'Έκδοση επίδειξης'}</p>
+        <p>{en ? 'No forms on this site currently submit anywhere, and no personal data is collected or stored. This policy describes the intended live service and requires legal review before launch.' : 'Καμία φόρμα δεν υποβάλλεται πουθενά και δεν συλλέγονται προσωπικά δεδομένα. Η πολιτική περιγράφει τη σχεδιαζόμενη υπηρεσία και χρειάζεται νομικό έλεγχο.'}</p>
+      </div>
+
+      <h2>{en ? 'No cookie banner, on purpose' : 'Χωρίς cookie banner, σκόπιμα'}</h2>
+      <p>{en
+        ? 'We use cookieless analytics, self-host our fonts rather than loading them from a third party, and embed nothing from other services. The only cookie we set records which language you chose. None of that requires your consent, so we do not interrupt you to ask for it.'
+        : 'Χρησιμοποιούμε αναλυτικά χωρίς cookies, φιλοξενούμε τις γραμματοσειρές μας τοπικά αντί να τις φορτώνουμε από τρίτους, και δεν ενσωματώνουμε τίποτα από άλλες υπηρεσίες. Το μόνο cookie καταγράφει τη γλώσσα που επιλέξατε. Τίποτα από αυτά δεν απαιτεί συγκατάθεση.'}</p>
+
+      <h2>{en ? 'What we collect when you enquire' : 'Τι συλλέγουμε όταν υποβάλλετε αίτημα'}</h2>
+      <p>{en
+        ? 'Only what a dealer needs to quote without ringing you first: your contact details, your district, and your answers about your water and property. Passing those to a dealer is covered separately —'
+        : 'Μόνο όσα χρειάζεται ένας αντιπρόσωπος για να δώσει προσφορά χωρίς να σας καλέσει πρώτα: στοιχεία επικοινωνίας, επαρχία, και τις απαντήσεις σας. Η διαβίβασή τους καλύπτεται ξεχωριστά —'}
+        <a href={path(locale, 'dealerSharing')}>{en ? 'see how we share your data' : 'δείτε πώς μοιραζόμαστε τα δεδομένα σας'}</a>.</p>
+
+      <h2>{en ? 'Your rights' : 'Τα δικαιώματά σας'}</h2>
+      <p>{en
+        ? 'Access, correction, deletion, portability, objection, and withdrawal of consent at any time. Ask and we will action it, and pass the request to the dealer holding your details.'
+        : 'Πρόσβαση, διόρθωση, διαγραφή, φορητότητα, εναντίωση και ανάκληση συγκατάθεσης ανά πάσα στιγμή. Ζητήστε το και θα το εκτελέσουμε, ενημερώνοντας και τον αντιπρόσωπο.'}</p>
+    </div>
+  </section>
+</Base>
