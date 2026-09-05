@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import PageHeader from '../PageHeader.astro';
 import SpecTable from '../SpecTable.astro';
 import FxCartridge from '../FxCartridge.astro';
+import { fxLabel } from '../../data/fx-labels';
 import { locales, path, type Locale } from '../../i18n/ui';
 import { useT } from '../../i18n/strings';
 import { products, getSeries, bySeries, spec } from '../../data/products';
@@ -23,6 +24,7 @@ const en = locale === 'en';
 const cap = spec(p, 'capacity');
 const flow = spec(p, 'flow');
 const micron = spec(p, 'micron');
+const lab = fxLabel(p.sku);
 ---
 <Base locale={locale} routeKey="products" selfPath={selfPath} altPath={altPath}
   title={`${p.sku} — ${s.technology[locale]}`}
@@ -38,7 +40,8 @@ const micron = spec(p, 'micron');
     lead={p.bestFor[locale]}>
     <div class="cluster" style="margin-top:var(--space-5)">
       <span class="chip">{s.technology[locale]}</span>
-      <span class="chip">{micron?.value} µm</span>
+      {micron?.value ? <span class="chip">{micron.value} µm</span> : <span class="chip">{s.certifications.join(' · ')}</span>}
+      {lab && <span class="chip chip--stone">{lab.inches}"</span>}
       {p.audience.map(a => <span class="chip chip--stone">{a === 'domestic' ? (en ? 'Home' : 'Σπίτι') : (en ? 'Business' : 'Επιχείρηση')}</span>)}
     </div>
   </PageHeader>
@@ -62,18 +65,73 @@ const micron = spec(p, 'micron');
             ))}
           </div>
           <p class="small muted" style="margin-top:var(--space-3)">
-            {en ? 'Same filtration in every size — the number is the cartridge length in inches, and the longer ones hold more. Your installer checks the clearance under your sink.'
-                : 'Ίδιο φιλτράρισμα σε κάθε μέγεθος — ο αριθμός είναι το μήκος σε ίντσες, και τα μακρύτερα χωρούν περισσότερο. Ο τεχνικός ελέγχει τον διαθέσιμο χώρο.'}
+            {en ? 'The number is the length in inches. Capacity does not follow it — the FX-15 holds nearly twice what the longer FX-17 does, so compare the litres.'
+                : 'Ο αριθμός είναι το μήκος σε ίντσες. Η χωρητικότητα δεν το ακολουθεί — το FX-15 χωράει σχεδόν διπλάσιο από το μακρύτερο FX-17, οπότε συγκρίνετε τα λίτρα.'}
           </p>
         </div>
 
         <h2 style="margin-top:var(--space-7)">{en ? 'Specification' : 'Προδιαγραφές'}</h2>
         <div style="margin-top:var(--space-4)"><SpecTable product={p} locale={locale} /></div>
 
+        {lab && lab.reductions.length > 0 && (
+          <>
+            <h2 style="margin-top:var(--space-7)">{en ? 'What it is certified to remove' : 'Τι είναι πιστοποιημένο να αφαιρεί'}</h2>
+            <p class="small muted" style="margin-top:var(--space-2);max-width:62ch">
+              {en
+                ? `Tested and certified by NSF International against ${lab.nsf}${lab.nsfModel ? `, in model ${lab.nsfModel}` : ''}. These figures are printed on the cartridge.`
+                : `Ελεγμένο και πιστοποιημένο από τον NSF International κατά ${lab.nsf}${lab.nsfModel ? `, στο μοντέλο ${lab.nsfModel}` : ''}. Τα στοιχεία είναι τυπωμένα στο φίλτρο.`}
+            </p>
+            <div class="table-scroll" style="margin-top:var(--space-4)">
+              <table class="spec-table">
+                <thead>
+                  <tr>
+                    <th scope="col">{en ? 'Contaminant' : 'Ρύπος'}</th>
+                    {lab.reductions.some(r => r.challenge) && <th scope="col">{en ? 'Influent challenge' : 'Πρόκληση εισόδου'}</th>}
+                    <th scope="col">{en ? 'Reduction' : 'Μείωση'}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lab.reductions.map(r => (
+                    <tr>
+                      <th scope="row">{r.contaminant[locale]}</th>
+                      {lab.reductions.some(x => x.challenge) && <td>{r.challenge ?? '—'}</td>}
+                      <td>{r.result}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {lab && (
+          <>
+            <h2 style="margin-top:var(--space-7)">{en ? 'Changing it' : 'Η αλλαγή του'}</h2>
+            <div class="notice" style="margin-top:var(--space-4);max-width:62ch">
+              <p class="notice__title">{lab.replace[locale]}</p>
+              {lab.flush && <p>{lab.flush[locale]}</p>}
+            </div>
+          </>
+        )}
+
+        {lab?.caution && (
+          <div class="notice notice--warn" style="margin-top:var(--space-5);max-width:62ch">
+            <p class="notice__title">{en ? 'From the label' : 'Από την ετικέτα'}</p>
+            <p>{lab.caution[locale]}</p>
+          </div>
+        )}
+
         <!-- Cost transparency — what replaces price (docs/07 §7.3) -->
         <h2 style="margin-top:var(--space-7)">{en ? 'What it costs' : 'Τι κοστίζει'}</h2>
         <div class="notice notice--warn" style="margin-top:var(--space-4);max-width:64ch">
           <p class="notice__title">{en ? 'We are not hiding the price. We do not have it yet.' : 'Δεν κρύβουμε την τιμή. Δεν την έχουμε ακόμα.'}</p>
+          {lab && lab.sku !== 'FX-10' && (
+            <p style="margin-bottom:var(--space-3)">
+              {en
+                ? `What we can tell you is the cycle: ${lab.replace.en.toLowerCase()}. Once we have the cartridge price, the annual running cost goes here and you can hold it against what you spend on bottled water.`
+                : `Αυτό που μπορούμε να πούμε είναι ο κύκλος: ${lab.replace.el.toLowerCase()}. Μόλις έχουμε την τιμή του φίλτρου, το ετήσιο κόστος θα εμφανιστεί εδώ.`}
+            </p>
+          )}
           <p>{en
             ? 'Installed cost genuinely varies — it depends on your plumbing, whether a head is already fitted, and which dealer does the work. But the running cost should not be a mystery, and when we have the cartridge price and the replacement interval confirmed, both will appear here. Until then, ask your dealer directly and they will quote you on the day.'
             : 'Το κόστος εγκατάστασης όντως διαφέρει — εξαρτάται από τα υδραυλικά σας, από το αν υπάρχει ήδη κεφαλή, και από τον αντιπρόσωπο. Όμως το κόστος χρήσης δεν πρέπει να είναι μυστήριο: μόλις επιβεβαιωθούν η τιμή του φίλτρου και το διάστημα αλλαγής, θα εμφανιστούν εδώ. Μέχρι τότε, ρωτήστε τον αντιπρόσωπό σας.'}</p>
@@ -124,7 +182,7 @@ const micron = spec(p, 'micron');
           <dl class="mini" style="margin-top:var(--space-3)">
             <div><dt>{t('spec.capacity')}</dt><dd class="mono">{cap?.value} {cap?.unit}</dd></div>
             <div><dt>{t('spec.flow')}</dt><dd class="mono">{flow?.value} {flow?.unit}</dd></div>
-            <div><dt>{t('spec.micron')}</dt><dd class="mono">{micron?.value} µm</dd></div>
+            <div><dt>{t('spec.interval')}</dt><dd class="mono">{spec(p, 'interval')?.value ? `${spec(p,'interval')!.value} ${spec(p,'interval')!.unit}` : '—'}</dd></div>
           </dl>
         </div>
       </aside>

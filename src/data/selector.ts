@@ -74,17 +74,24 @@ export function pickTechnology(problems: string[]): { series: 'fx' | 'h'; media?
   return { series: 'fx', pre };
 }
 
-/** Length axis. The number is the cartridge length in inches, and longer
- *  cartridges hold more, so this trades interval against under-sink clearance.
- *  Never returns 17 for a small household — that is overselling, and it is the
- *  size most likely not to fit. */
+/** Size axis — rebuilt from the printed labels.
+ *
+ *  The earlier version treated 10 -> 15 -> 17 as a capacity ladder. The labels
+ *  disprove that: FX-15 treats 11,356 L, the longer FX-17 only 6,056 L, and all
+ *  three run at the same 1.9 L/min. So there is no ladder to climb.
+ *
+ *  What the labels actually support:
+ *    FX-15  most capacity, certified to NSF 42/53/401, 6-month interval
+ *    FX-17  longest, roughly half the capacity, 6-12 month interval
+ *    FX-10  smallest capacity, NSF 42/53 only
+ *
+ *  So FX-15 is the default for almost everyone. FX-10 is for the lightest use
+ *  or the tightest cabinet. FX-17 is only sensible where its length suits the
+ *  installation, which is the installer's call, not a web form's.
+ */
 export function pickSize(people: string, interval: string): '10' | '15' | '17' {
-  const m: Record<string, Record<string, '10' | '15' | '17'>> = {
-    '1-2': { small: '10', normal: '10', rare: '15' },
-    '3-4': { small: '10', normal: '15', rare: '17' },
-    '5+':  { small: '15', normal: '15', rare: '17' },
-  };
-  return m[people]?.[interval] ?? '15';
+  if (people === '1-2' && interval === 'small') return '10';
+  return '15';
 }
 
 export function recommend(a: Answers): { sku: string; pre?: string; alt?: string } {
@@ -92,6 +99,7 @@ export function recommend(a: Answers): { sku: string; pre?: string; alt?: string
   if (tech.series === 'h') return { sku: tech.media!, pre: tech.pre, alt: 'FX-15' };
   const size = pickSize(a.people, a.interval);
   const sku = `FX-${size}`;
-  const altSize = size === '17' ? '15' : size === '15' ? '17' : '15';
-  return { sku, pre: tech.pre, alt: `FX-${altSize}` };
+  // The alternative is the honest trade, not the next rung up
+  const alt = size === '15' ? 'FX-10' : 'FX-15';
+  return { sku, pre: tech.pre, alt };
 }

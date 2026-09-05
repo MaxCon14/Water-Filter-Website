@@ -82,6 +82,31 @@ one exception is the Greek typeface verification (A-14), which was checked direc
 
 ---
 
+## What the label photographs overturned
+
+The client supplied photographs of the FX-10, FX-15 and FX-17 labels. They replaced the
+distributor-sourced figures wholesale:
+
+| Figure | Distributor listing | Printed label | Out by |
+|---|---|---|---|
+| FX-10 capacity | 30,000 L | **2,839 L** (750 gal) | ~10x |
+| FX-15 capacity | 60,567 L | **11,356 L** (3,000 gal) | ~5x |
+| FX-17 capacity | 71,920 L | **6,056 L** (1,600 gal) | ~12x |
+| Flow, all three | 5.7–9.5 L/min | **1.9 L/min** (0.5 gpm) | 3–5x |
+| Micron rating | 0.1 µm | **not stated on any label** | unsupported |
+| Head compatibility | Everpure QL3B | **"original manufacturer's filter head"** | contradicted |
+
+Two structural consequences:
+
+1. **Capacity does not rise with length.** FX-15 (15 inch) treats 11,356 L; the longer FX-17
+   treats 6,056 L. There is no ladder, and the selector's size logic was rebuilt accordingly.
+2. **The 0.1 micron claim has no support** and has been removed from the site. It was a
+   distributor figure and appears on none of the three labels.
+
+The corroboration that made the old figures look trustworthy — "two independent sources agree to
+within one litre" — was two sources repeating the same wrong listing. Agreement between secondary
+sources is not verification.
+
 ## The five assumptions most worth testing first
 
 1. ~~**A-4**~~ — **tested and falsified.** The client photograph settled it: the numbers are inches.

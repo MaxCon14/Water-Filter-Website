@@ -34,13 +34,14 @@ fifteen-plus as the research suggests? Which are available in Cyprus specificall
 
 *Ref: [02](02-product-matrix.md) §2.3*
 
-### 3. Recommended replacement interval, in months, per SKU
+### 3. ~~Recommended replacement interval~~ — **ANSWERED for FX**
 
-**Blocks:** selector Q4, SKU pages, cost comparison, reminder sequence, comparison table.
+The client's label photographs settled this. **FX-15: every 6 months, or 3,000 gallons, whichever
+comes first. FX-17: every 6 to 12 months, varying with local water quality.** FX-10's label does
+not state an interval.
 
-**Commercially the most important number in the plan.** It sets the consumable revenue cycle, and
-capacity in litres is not a usable substitute for domestic buyers — see
-[02](02-product-matrix.md) §2.4.
+Still open for **HF2 and the H series**, and still the number that sets the consumable revenue
+cycle. See Q7 below — their data is now actively suspect.
 
 ### 4. Is there a whole-house or softening product for Cyprus?
 
@@ -75,7 +76,21 @@ address, response commitment, weekly capacity, photo and consent to use it.
 *Ref: [08](08-lead-engine.md) §8.5 · [12](12-technical-specification.md) §12.2 ·
 **the project's critical path**, [15](15-delivery-roadmap.md) §15.2*
 
-### 7. Verified specifications for every SKU
+### 7. Label photographs for HF2 and the H series — **now urgent**
+
+**Gates:** every HF2 and H figure on the site.
+
+The FX specifications on this site were replaced with manufacturer label data after the client
+supplied product photographs. The distributor listings they replaced were wrong by roughly **ten
+times on capacity** (FX-15 listed at 60,567 L; the label says 11,356 L) and by **three to five
+times on flow** (listed at 9.4 L/min; the label says 1.9 L/min).
+
+HF2 and H are still sourced from those same listings. There is no reason to think they are any more
+accurate. **Treat every HF2 and H number on the site as unreliable until a label photograph
+confirms it** — a photograph of each label is a five-minute job and is now the single highest-value
+thing outstanding.
+
+### 8. Verified specifications for every SKU
 
 **Gates:** all product pages, comparison, structured data.
 

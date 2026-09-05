@@ -15,6 +15,12 @@ Every figure in this document is **Tier B or Tier C**. None is Tier A.
 | **B** | Consistent across two or more independent distributor listings | Design from it. Do not publish. |
 | **C** | Single retailer listing, or a search summary of one | Treat as a hypothesis |
 
+> **This warning was not theoretical.** When the client supplied label photographs, the FX figures
+> below turned out to be wrong by up to twelve times on capacity and by three to five times on
+> flow, and the 0.1 micron rating was not on any label at all. The FX rows have been replaced with
+> label data. **HF2 and H still carry the old listings and should be assumed wrong until
+> photographed.**
+
 **No figure below may appear on a customer-facing page, a downloadable spec sheet, or in any
 performance claim until Fluux confirms it in writing.** The build should treat every spec field as
 CMS content with an explicit `verified` boolean, so unverified values physically cannot render on

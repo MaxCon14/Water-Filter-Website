@@ -2,6 +2,14 @@ import type { Locale } from '../i18n/ui';
 
 /* ============================================================
    Product data — docs/02-product-matrix.md
+
+   WARNING on HF2 and H:
+   The FX figures below were replaced with manufacturer label data
+   after the client supplied product photographs. The distributor
+   listings they replaced were wrong by ~10x on capacity and ~3-5x
+   on flow. HF2 and H are still sourced from those same listings,
+   so treat every one of their numbers as unreliable until a label
+   photograph confirms them. See docs/99-open-questions.md Q7.
    EVERY specification here is Tier B/C: sourced from distributor
    and retailer listings, unverified against the manufacturer.
    `verified: false` is the default and the UI must respect it
@@ -45,21 +53,23 @@ export const series: Series[] = [
     key: 'fx',
     name: 'FX',
     technology: { en: 'All-in-one filtration', el: 'All-in-one φιλτράρισμα' },
-    micron: '0.1',
+    /* The labels state no micron rating. The 0.1 µm figure came from a
+       distributor listing and is not supported — do not reinstate it. */
+    micron: '',
     audience: ['domestic', 'commercial'],
-    heads: ['Everpure QL3B'],
+    heads: ['Original Microfilter head'],
     certifications: ['NSF/ANSI 42', 'NSF/ANSI 53', 'NSF/ANSI 401'],
-    certVerified: false,
+    certVerified: true,
     headline: {
-      en: 'The finest filtration in the range',
-      el: 'Το πιο λεπτό φιλτράρισμα της σειράς',
+      en: 'Certified, and the certificate is printed on the cartridge',
+      el: 'Πιστοποιημένο, και η πιστοποίηση είναι τυπωμένη πάνω στο φίλτρο',
     },
     summary: {
-      en: 'The label calls it a basic-type all-in-one filter: 0.1 micron, reducing chlorine, taste and odour, cysts and bacteria in a single cartridge. It is the line to choose when the question is what your family drinks.',
-      el: 'Η ετικέτα το περιγράφει ως all-in-one φίλτρο: 0,1 micron, με μείωση χλωρίου, γεύσης και οσμής, κύστεων και βακτηρίων σε ένα φίλτρο. Η σειρά που επιλέγετε όταν το ζήτημα είναι τι πίνει η οικογένειά σας.',
+      en: 'Three all-in-one cartridges that reduce sediment, chlorine, taste and odour, cysts and bacteria. All three run at the same rate — what separates them is how much they treat before they need changing, and the FX-15 treats the most.',
+      el: 'Τρία all-in-one φίλτρα που μειώνουν ίζημα, χλώριο, γεύση και οσμή, κύστες και βακτήρια. Και τα τρία έχουν την ίδια παροχή — αυτό που τα ξεχωρίζει είναι πόσο νερό επεξεργάζονται πριν χρειαστούν αλλαγή, και το FX-15 επεξεργάζεται το περισσότερο.',
     },
     scopeNote: {
-      en: 'FX treats the water at one tap. It will not descale your boiler, your washing machine or your solar water heater.',
+      en: 'FX treats the water at one tap, for cold water only. It will not descale your boiler, your washing machine or your solar water heater, and the label is explicit that it needs the original manufacturer’s head.',
       el: 'Το FX επεξεργάζεται το νερό σε μία βρύση. Δεν καθαρίζει τα άλατα από τον θερμοσίφωνα, το πλυντήριο ή τον ηλιακό σας.',
     },
   },
@@ -133,50 +143,44 @@ const A = (value: string, unit?: string): Omit<Spec, 'key'> =>
 export const products: Product[] = [
   {
     sku: 'FX-10', series: 'fx', size: '10', audience: ['domestic'],
-    bestFor: { en: 'One or two people, a single kitchen tap', el: 'Ένα ή δύο άτομα, μία βρύση κουζίνας' },
+    bestFor: { en: 'The basic one. Chlorine, taste, cysts and lead', el: 'Το βασικό. Χλώριο, γεύση, κύστες και μόλυβδος' },
     specs: [
-      { key: 'technology', ...B('Ultrafiltration (UF) membrane') },
-      { key: 'micron',     ...B('0.1', 'µm') },
-      { key: 'flow',       ...B('5.7', 'L/min') },
-      { key: 'capacity',   ...B('30,000', 'L') },
+      { key: 'technology', ...A('Chemical and mechanical reduction') },
+      { key: 'flow',       ...A('1.9', 'L/min'), note: '0.5 gpm' },
+      { key: 'capacity',   ...A('2,839', 'L'), note: '750 US gallons' },
       { key: 'length',     ...A('10', 'inch') },
       { key: 'interval',   ...UNKNOWN },
-      { key: 'pressure',   ...B('10–125', 'psi') },
-      { key: 'temperature',...B('2–38', '°C') },
-      { key: 'connection', ...B('3/8', 'inch') },
-      { key: 'scale',      ...C('No — S variant adds it') },
+      { key: 'pressure',   ...A('max 125', 'psi'), note: '862 kPa' },
+      { key: 'temperature',...A('0.6–38', '°C'), note: '33–100 °F' },
+      { key: 'scale',      ...A('No') },
     ],
   },
   {
     sku: 'FX-15', series: 'fx', size: '15', audience: ['domestic', 'commercial'],
-    bestFor: { en: 'The flagship. A family home, or light commercial use', el: 'Η ναυαρχίδα. Οικογενειακό σπίτι ή ελαφριά επαγγελματική χρήση' },
+    bestFor: { en: 'The most capable. Highest capacity in the range, and the only one certified to 401', el: 'Το πληρέστερο. Μέγιστη χωρητικότητα και το μόνο πιστοποιημένο κατά 401' },
     specs: [
-      { key: 'technology', ...B('Ultrafiltration (UF) membrane') },
-      { key: 'micron',     ...B('0.1', 'µm') },
-      { key: 'flow',       ...B('9.4', 'L/min') },
-      { key: 'capacity',   ...B('60,567', 'L'), note: 'Two independent sources agree to within one litre (16,000 US gal = 60,566 L).' },
+      { key: 'technology', ...A('All-in-one, sediment through bacteria') },
+      { key: 'flow',       ...A('1.9', 'L/min'), note: '0.5 gpm' },
+      { key: 'capacity',   ...A('11,356', 'L'), note: '3,000 US gallons' },
       { key: 'length',     ...A('15', 'inch') },
-      { key: 'interval',   ...UNKNOWN },
-      { key: 'pressure',   ...B('10–125', 'psi') },
-      { key: 'temperature',...B('2–38', '°C') },
-      { key: 'connection', ...B('3/8', 'inch') },
-      { key: 'scale',      ...C('No — S variant adds it') },
+      { key: 'interval',   ...A('6', 'months'), note: 'or 3,000 gallons, whichever comes first' },
+      { key: 'pressure',   ...A('20–100', 'psi'), note: '138–689 kPa' },
+      { key: 'temperature',...A('0.6–37.8', '°C'), note: '33–100 °F' },
+      { key: 'scale',      ...A('No') },
     ],
   },
   {
     sku: 'FX-17', series: 'fx', size: '17', audience: ['domestic', 'commercial'],
-    bestFor: { en: 'The largest. Highest capacity, longest between changes', el: 'Το μεγαλύτερο. Μέγιστη χωρητικότητα, μεγαλύτερα διαστήματα αλλαγής' },
+    bestFor: { en: 'The longest cartridge. Note it holds less than the FX-15', el: 'Το μακρύτερο φίλτρο. Σημειώστε ότι χωράει λιγότερο από το FX-15' },
     specs: [
-      { key: 'technology', ...A('All-in-one, chemical and mechanical reduction') },
-      { key: 'micron',     ...A('0.1', 'micron') },
-      { key: 'flow',       ...A('9.5', 'L/min'), note: '2.5 GPM' },
-      { key: 'capacity',   ...A('71,920', 'L'), note: '19,000 US gallons' },
+      { key: 'technology', ...A('Chemical and mechanical reduction') },
+      { key: 'flow',       ...A('1.9', 'L/min'), note: '0.5 gpm' },
+      { key: 'capacity',   ...A('6,056', 'L'), note: '1,600 US gallons' },
       { key: 'length',     ...A('17', 'inch') },
-      { key: 'interval',   ...UNKNOWN },
-      { key: 'pressure',   ...A('10–125', 'psi') },
-      { key: 'temperature',...A('2–38', '°C'), note: '35–100 °F' },
-      { key: 'connection', ...A('3/8', 'inch') },
-      { key: 'scale',      ...C('No — S variant adds it') },
+      { key: 'interval',   ...A('6–12', 'months'), note: 'varies with local water quality' },
+      { key: 'pressure',   ...A('20–100', 'psi'), note: '140–689 kPa' },
+      { key: 'temperature',...A('4–38', '°C'), note: '39–100 °F' },
+      { key: 'scale',      ...A('No') },
     ],
   },
   {
