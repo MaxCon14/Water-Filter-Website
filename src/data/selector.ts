@@ -49,8 +49,8 @@ export const questions: Question[] = [
     id: 'interval',
     title: { en: 'How often do you want to think about it?', el: 'Πόσο συχνά θέλετε να το σκέφτεστε;' },
     hint: {
-      en: 'Size in this range means how long a cartridge lasts, not how much space it takes.',
-      el: 'Το μέγεθος εδώ σημαίνει πόσο κρατάει το φίλτρο, όχι πόσο χώρο πιάνει.',
+      en: 'Bigger cartridges last longer, but they are physically longer too — your installer checks the clearance under your sink before fitting anything.',
+      el: 'Τα μεγαλύτερα φίλτρα κρατούν περισσότερο, αλλά είναι και πιο μακριά — ο τεχνικός ελέγχει τον διαθέσιμο χώρο πριν τοποθετήσει οτιδήποτε.',
     },
     options: [
       { id: 'rare',   label: { en: 'As rarely as possible — the longest interval', el: 'Όσο πιο σπάνια γίνεται — το μεγαλύτερο διάστημα' } },
@@ -74,7 +74,10 @@ export function pickTechnology(problems: string[]): { series: 'fx' | 'h'; media?
   return { series: 'fx', pre };
 }
 
-/** Capacity axis. Never returns 17 for a small household — that is overselling. */
+/** Length axis. The number is the cartridge length in inches, and longer
+ *  cartridges hold more, so this trades interval against under-sink clearance.
+ *  Never returns 17 for a small household — that is overselling, and it is the
+ *  size most likely not to fit. */
 export function pickSize(people: string, interval: string): '10' | '15' | '17' {
   const m: Record<string, Record<string, '10' | '15' | '17'>> = {
     '1-2': { small: '10', normal: '10', rare: '15' },

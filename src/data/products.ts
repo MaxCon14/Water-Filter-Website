@@ -11,7 +11,7 @@ import type { Locale } from '../i18n/ui';
 export type Tier = 'A' | 'B' | 'C';
 export type SpecKey =
   | 'technology' | 'micron' | 'flow' | 'capacity' | 'interval'
-  | 'pressure' | 'temperature' | 'connection' | 'scale';
+  | 'pressure' | 'temperature' | 'connection' | 'scale' | 'length';
 
 export interface Spec {
   key: SpecKey;
@@ -44,7 +44,7 @@ export const series: Series[] = [
   {
     key: 'fx',
     name: 'FX',
-    technology: { en: 'Ultrafiltration membrane', el: 'Μεμβράνη υπερδιήθησης' },
+    technology: { en: 'All-in-one filtration', el: 'All-in-one φιλτράρισμα' },
     micron: '0.1',
     audience: ['domestic', 'commercial'],
     heads: ['Everpure QL3B'],
@@ -55,8 +55,8 @@ export const series: Series[] = [
       el: 'Το πιο λεπτό φιλτράρισμα της σειράς',
     },
     summary: {
-      en: 'A 0.1 micron ultrafiltration membrane. Reported as certified for microplastics as well as chlorine, taste and cysts — which makes it the line to choose when the question is what your family drinks.',
-      el: 'Μεμβράνη υπερδιήθησης 0,1 micron. Αναφέρεται ως πιστοποιημένη για μικροπλαστικά, χλώριο, γεύση και κύστες — η σειρά που επιλέγετε όταν το ζήτημα είναι τι πίνει η οικογένειά σας.',
+      en: 'The label calls it a basic-type all-in-one filter: 0.1 micron, reducing chlorine, taste and odour, cysts and bacteria in a single cartridge. It is the line to choose when the question is what your family drinks.',
+      el: 'Η ετικέτα το περιγράφει ως all-in-one φίλτρο: 0,1 micron, με μείωση χλωρίου, γεύσης και οσμής, κύστεων και βακτηρίων σε ένα φίλτρο. Η σειρά που επιλέγετε όταν το ζήτημα είναι τι πίνει η οικογένειά σας.',
     },
     scopeNote: {
       en: 'FX treats the water at one tap. It will not descale your boiler, your washing machine or your solar water heater.',
@@ -125,6 +125,11 @@ const C = (value: string | null, unit?: string): Omit<Spec, 'key'> =>
   ({ value, unit, verified: false, tier: value ? 'C' : null });
 const UNKNOWN: Omit<Spec, 'key'> = { value: null, verified: false, tier: null };
 
+/** Transcribed from the manufacturer's printed label (client-supplied photograph).
+ *  Re-check against the physical label before anything goes to print or legal. */
+const A = (value: string, unit?: string): Omit<Spec, 'key'> =>
+  ({ value, unit, verified: true, tier: 'A', note: undefined });
+
 export const products: Product[] = [
   {
     sku: 'FX-10', series: 'fx', size: '10', audience: ['domestic'],
@@ -134,9 +139,11 @@ export const products: Product[] = [
       { key: 'micron',     ...B('0.1', 'µm') },
       { key: 'flow',       ...B('5.7', 'L/min') },
       { key: 'capacity',   ...B('30,000', 'L') },
+      { key: 'length',     ...A('10', 'inch') },
       { key: 'interval',   ...UNKNOWN },
-      { key: 'pressure',   ...C('30–125', 'psi') },
-      { key: 'temperature',...C('4–38', '°C') },
+      { key: 'pressure',   ...B('10–125', 'psi') },
+      { key: 'temperature',...B('2–38', '°C') },
+      { key: 'connection', ...B('3/8', 'inch') },
       { key: 'scale',      ...C('No — S variant adds it') },
     ],
   },
@@ -148,23 +155,27 @@ export const products: Product[] = [
       { key: 'micron',     ...B('0.1', 'µm') },
       { key: 'flow',       ...B('9.4', 'L/min') },
       { key: 'capacity',   ...B('60,567', 'L'), note: 'Two independent sources agree to within one litre (16,000 US gal = 60,566 L).' },
+      { key: 'length',     ...A('15', 'inch') },
       { key: 'interval',   ...UNKNOWN },
-      { key: 'pressure',   ...C('30–125', 'psi') },
-      { key: 'temperature',...C('4–38', '°C') },
+      { key: 'pressure',   ...B('10–125', 'psi') },
+      { key: 'temperature',...B('2–38', '°C') },
+      { key: 'connection', ...B('3/8', 'inch') },
       { key: 'scale',      ...C('No — S variant adds it') },
     ],
   },
   {
-    sku: 'FX-17', series: 'fx', size: '17', audience: ['commercial'],
-    bestFor: { en: 'High volume. Same flow as FX-15, longer between changes', el: 'Μεγάλος όγκος. Ίδια παροχή με το FX-15, μεγαλύτερα διαστήματα αλλαγής' },
+    sku: 'FX-17', series: 'fx', size: '17', audience: ['domestic', 'commercial'],
+    bestFor: { en: 'The largest. Highest capacity, longest between changes', el: 'Το μεγαλύτερο. Μέγιστη χωρητικότητα, μεγαλύτερα διαστήματα αλλαγής' },
     specs: [
-      { key: 'technology', ...B('Ultrafiltration (UF) membrane') },
-      { key: 'micron',     ...B('0.1', 'µm') },
-      { key: 'flow',       ...B('9.4', 'L/min') },
-      { key: 'capacity',   ...B('71,992', 'L') },
+      { key: 'technology', ...A('All-in-one, chemical and mechanical reduction') },
+      { key: 'micron',     ...A('0.1', 'micron') },
+      { key: 'flow',       ...A('9.5', 'L/min'), note: '2.5 GPM' },
+      { key: 'capacity',   ...A('71,920', 'L'), note: '19,000 US gallons' },
+      { key: 'length',     ...A('17', 'inch') },
       { key: 'interval',   ...UNKNOWN },
-      { key: 'pressure',   ...C('30–125', 'psi') },
-      { key: 'temperature',...C('4–38', '°C') },
+      { key: 'pressure',   ...A('10–125', 'psi') },
+      { key: 'temperature',...A('2–38', '°C'), note: '35–100 °F' },
+      { key: 'connection', ...A('3/8', 'inch') },
       { key: 'scale',      ...C('No — S variant adds it') },
     ],
   },

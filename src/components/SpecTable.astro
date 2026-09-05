@@ -15,14 +15,15 @@ const labels: Record<string, string> = {
   pressure: locale === 'en' ? 'Operating pressure' : 'Πίεση λειτουργίας',
   temperature: locale === 'en' ? 'Water temperature' : 'Θερμοκρασία νερού',
   connection: locale === 'en' ? 'Connection' : 'Σύνδεση',
+  length: locale === 'en' ? 'Cartridge length' : 'Μήκος φίλτρου',
 };
 ---
 <div class="table-scroll">
   <table class="spec-table">
     <caption>
       {locale === 'en'
-        ? 'Every figure below is from a distributor listing, not from the manufacturer. None is confirmed.'
-        : 'Κάθε στοιχείο προέρχεται από καταλόγους διανομέων, όχι από τον κατασκευαστή. Κανένα δεν είναι επιβεβαιωμένο.'}
+        ? 'Rows marked with a source letter come from distributor listings and are not confirmed by the manufacturer. Unmarked rows are transcribed from the printed label.'
+        : 'Οι γραμμές με γράμμα πηγής προέρχονται από καταλόγους διανομέων και δεν είναι επιβεβαιωμένες. Οι υπόλοιπες προέρχονται από την τυπωμένη ετικέτα.'}
     </caption>
     <tbody>
       {product.specs.map(sp => (

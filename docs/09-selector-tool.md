@@ -74,10 +74,15 @@ is point-of-use. This answer must not be quietly redirected to an under-sink car
 | A normal service interval is fine | → mid size |
 | I'd rather have the smaller, cheaper option | → smallest size |
 
-**This is the most important design decision in the tool.** Per [02](02-product-matrix.md) §2.4,
-size determines cartridge life, not physical fit — FX-15 and FX-17 have identical flow. Asking
-*"how much space do you have?"* would be the obvious question and would produce systematically
-wrong recommendations.
+**This is the most important design decision in the tool, and it was originally wrong.**
+The first version of this section argued that size meant cartridge life rather than physical fit,
+and that asking about space would produce wrong recommendations. A client photograph of the FX
+range corrected that: the numbers are inches, and a 17-inch cartridge needs the clearance.
+
+What survives is the reason the question is phrased this way. FX-15 and FX-17 have identical flow
+(9.5 LPM on the label), so between two sizes that both fit, the only difference is how often you
+change it — and that is a preference a visitor can actually answer. Clearance is left to the
+installer, who measures it rather than asking the customer to estimate it.
 
 *Copy intent:* a preference about convenience versus cost, which every visitor can answer, rather
 than a technical parameter that none can.

@@ -55,15 +55,30 @@ naming grammar appears to be `{series}{size}-{media}{stage}`.
 
 This is the highest-priority open question. See [02](02-product-matrix.md) §2.2.
 
-### Finding 2 — The size numbers are not inches
+### Finding 2 — CORRECTED: the size numbers *are* inches
 
-FX-15 and FX-17 are reported with the **same flow rate** (9.4 LPM) but **different capacity**
-(60,567 L vs 71,992 L). If 10/15/17 were housing lengths driving flow, flow would differ.
+**This finding was originally wrong and is retained here with its correction, because
+the plan and the selector tool were both built on it.**
 
-So size is a **cartridge-life ladder**. The practical question a buyer must answer is *"how much
-water do you use, and how often are you willing to change a cartridge"* — not *"how much clearance
-is under your sink."* This changes the wording, the order and the logic of the selector tool's
-central question. See [09](09-selector-tool.md).
+Originally we concluded that 10/15/17 could not be housing lengths, reasoning that FX-15
+and FX-17 share a flow rate (9.4 LPM) and so length could not be the variable. The client
+subsequently supplied a photograph of the three FX cartridges side by side. They are
+plainly three different physical lengths, in the ratio ~0.6 : 0.85 : 1.0, which matches
+10 : 15 : 17 almost exactly.
+
+**What was right:** length drives **capacity**, not flow. FX-15 and FX-17 do run at the
+same rate — the label confirms 2.5 GPM / 9.5 LPM — so the larger cartridge buys time
+between changes, not performance.
+
+**What was wrong, and what it cost:** under-sink clearance is a genuine fitting
+constraint. A 17-inch cartridge needs seventeen inches of clear cabinet height. The
+selector tool was written to *avoid* asking about space, on the explicit reasoning that
+space was irrelevant — which would have recommended cartridges that do not physically fit.
+That has been corrected in [09](09-selector-tool.md) §9.2 and the copy in
+[02](02-product-matrix.md) §2.4.
+
+*Ref: assumption A-4 in [99 — Assumptions](99-assumptions.md), which was flagged as the
+single assumption most worth testing first. It was, and it failed.*
 
 ### Finding 3 — These are cartridges, not standalone systems
 

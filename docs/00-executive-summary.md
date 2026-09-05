@@ -20,13 +20,15 @@ need capacity, flow rates, service contracts and a person to call).
 **1. The product matrix in the brief does not match the product range that exists.**
 The brief describes three lines — FX, FHF2, HFS — each in 10"/15"/17". Research found **FX** and
 **HF2**, no line called HFS, and an **H-series** (H17-SD3, H17-CS2, H17-PS2) organised by media
-type rather than by size. The 10/15/17 numbers are not inches. Resolving this is the single
-biggest blocker in the plan. See [02](02-product-matrix.md) and [99](99-open-questions.md).
+type rather than by size. Resolving this is the single biggest blocker in the plan.
+See [02](02-product-matrix.md) and [99](99-open-questions.md).
 
-**2. Size means cartridge life, not physical fit.**
-FX-15 and FX-17 have the same flow rate (9.4 LPM) but different capacity (60,567 L vs 71,992 L).
-So the size question is *"how much water do you use and how often do you want to change it"* — not
-*"what fits under your sink."* This inverts the most important question in the selector tool.
+**2. Size is the cartridge length in inches — and it sets capacity, not flow.**
+*This corrects an earlier finding in this plan, which claimed the numbers were not inches.*
+A client photograph of the three FX cartridges shows three physical lengths matching 10 : 15 : 17.
+FX-15 and FX-17 run at the same 9.5 LPM, so the extra length buys time between changes rather
+than performance. The selector therefore has to weigh **two** things — under-sink clearance and
+how often someone wants to change a cartridge — where it previously weighed only the second.
 
 **3. These are cartridges for third-party heads, not standalone systems.**
 The range is built around Everpure and 3M Aqua-Pure head compatibility. That creates a second lead

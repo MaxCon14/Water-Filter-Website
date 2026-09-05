@@ -17,14 +17,14 @@ one exception is the Greek typeface verification (A-14), which was checked direc
 | **A-1** | "Fluux" is the brand of **Microfilter Co.**, a South Korean manufacturer | Distributor listings consistently pair the names | Provenance messaging and the About page change; no structural impact |
 | **A-2** | The brief's "FHF2" is the **HF2** line | Naming similarity; no "FHF2" found anywhere | If they are different lines, the product IA needs a fourth branch |
 | **A-3** | "HFS" is most likely the **H-series** (H17-SD3/CS2/PS2), mis-transcribed | H-series exists; nothing named HFS does | **The two-step IA framing absorbs any answer**, but the selector's leaf nodes change |
-| **A-4** | The size numbers **10/15/17 are not inches** — they denote a capacity/cartridge-life tier | FX-15 and FX-17 share a flow rate (9.4 LPM) but differ in capacity | **Selector Q4 is wrong and must be rewritten.** This is the highest-consequence assumption in the plan |
+| **A-4** | ~~The size numbers 10/15/17 are not inches~~ — **FALSIFIED.** They are the cartridge length in inches | Client photograph of FX-10/15/17 side by side: three physical lengths in the ratio 10 : 15 : 17 | **It was wrong.** Corrected in [01](01-context-and-findings.md) Finding 2, [02](02-product-matrix.md) §2.4 and [09](09-selector-tool.md) §9.2. Clearance is now a fitting constraint the installer checks |
 | **A-5** | Products are **cartridges for third-party heads** (Everpure, 3M Aqua-Pure), with some head bundles | Repeated, consistent compatibility claims across distributors | The replacement/new-install fork and the cross-reference tool lose their basis |
 | **A-6** | The `S` suffix denotes a **scale-inhibitor** variant | FX-15S described as "Scale Inhibitor"; H17-PS2 as polyphosphate | Suffix decoding in the CMS and comparison changes |
 | **A-7** | The naming grammar is `{series}{size}-{media}{stage}` | Inferred from observed SKU codes | CMS schema field structure changes |
 | **A-8** | The range is **point-of-use only** — no whole-house or softening product | Nothing found addressing whole-house | **Homeowner messaging becomes much broader**; limescale becomes a P0 product claim; selector whole-house branch becomes a normal path |
 | **A-9** | FX is domestic-leaning; HF2 is commercial-leaning | Flow, capacity, and distributor positioning ("ice machines") | Audience-aware spec emphasis on SKU pages inverts |
 | **A-10** | All specification figures cited are **approximately correct in magnitude** | Two independent sources agreed to within 1 litre on FX-15 (16,000 US gal = 60,566 L) | Individual figures are wrong; the verification gate ([12](12-technical-specification.md) §12.3) is designed to contain exactly this |
-| **A-11** | The "35~100 ℃" operating temperature in one source is a **°F/°C error** | 35–100 °F = 1.7–37.8 °C, matching FX's stated 4–38 °C | If it is genuinely Celsius, the application range is completely different |
+| **A-11** | The "35~100 ℃" operating temperature in one source is a **°F/°C error** — **CONFIRMED** | The printed label reads "35~100 °F (2~38 °C)" | Confirmed correct. The distributor listing carried a unit error; the label does not |
 | **A-12** | Fluux products are **available in Cyprus** in the sizes and lines described | Assumed from the brief | Range and IA shrink to what is actually stocked |
 | **A-13** | Cartridge replacement is a **recurring revenue stream** the business wants to capture | Inferred from the consumable model | The reminder opt-in and replacement content lose their commercial rationale |
 
@@ -84,8 +84,8 @@ one exception is the Greek typeface verification (A-14), which was checked direc
 
 ## The five assumptions most worth testing first
 
-1. **A-4** — that size means capacity, not inches. It determines the selector's central question, and
-   getting it wrong misroutes every homeowner recommendation.
+1. ~~**A-4**~~ — **tested and falsified.** The client photograph settled it: the numbers are inches.
+   This is exactly why it was top of the list, and the selector has been corrected.
 2. **A-8** — that there is no whole-house product. It sets the ceiling on the homeowner proposition.
 3. **C-27** — that free water testing is available. The primary sitewide CTA rests on it.
 4. **D-32** — that dealers accept exclusive routing. Four of the eight objections in

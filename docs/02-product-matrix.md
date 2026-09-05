@@ -143,7 +143,13 @@ the other two lines and needs its own IA treatment.
 
 ## 2.4 What the size number actually determines
 
-**Not** physical clearance. **Not** flow rate. **Capacity — that is, cartridge life.**
+**The cartridge length in inches — and through it, capacity.** Not flow rate.
+
+> **Correction.** An earlier version of this section stated that the size numbers were *not*
+> inches and that clearance was irrelevant. A client-supplied photograph of the FX range shows
+> three distinct physical lengths in the ratio 10 : 15 : 17. Clearance matters. The rest of this
+> section — that length buys capacity rather than flow — still holds and is confirmed by the
+> printed label.
 
 | | FX-10 | FX-15 | FX-17 |
 |---|---|---|---|
@@ -155,8 +161,10 @@ FX-10 is genuinely a smaller-duty product — lower flow *and* lower capacity. B
 
 ### Why this matters more than it sounds
 
-The obvious selector question — *"how much space do you have?"* — is **the wrong question** and
-would produce wrong recommendations. The right question is about consumption and change frequency.
+The obvious selector question — *"how much space do you have?"* — is **necessary but not
+sufficient.** Clearance rules sizes out; consumption and change frequency choose between the ones
+that remain. The selector asks the second and leaves the first to the installer, who measures it
+on the day. See [09](09-selector-tool.md) §9.2.
 
 A worked example for the site, using the FX-15 figure and a stated assumption:
 

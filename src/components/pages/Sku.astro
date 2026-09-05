@@ -48,7 +48,7 @@ const micron = spec(p, 'micron');
         <!-- Size selector: labelled by interval, per docs/07 §7.3 -->
         <div class="sizes" role="group" aria-label={en ? 'Choose a size in this series' : 'Επιλέξτε μέγεθος στη σειρά'}>
           <p class="mono small muted" style="margin-bottom:var(--space-3)">
-            {en ? 'SIZE — HOW LONG BETWEEN CHANGES' : 'ΜΕΓΕΘΟΣ — ΔΙΑΣΤΗΜΑ ΑΛΛΑΓΗΣ'}
+            {en ? 'SIZE — LENGTH IN INCHES, AND HOW LONG IT LASTS' : 'ΜΕΓΕΘΟΣ — ΜΗΚΟΣ ΣΕ ΙΝΤΣΕΣ ΚΑΙ ΔΙΑΡΚΕΙΑ'}
           </p>
           <div class="sizes__row">
             {siblings.map(sib => (
@@ -56,13 +56,13 @@ const micron = spec(p, 'micron');
                  href={path(locale, 'products', s.key, sib.sku.toLowerCase())}
                  aria-current={sib.sku === p.sku ? 'page' : undefined}>
                 <span class="mono sizes__sku">{sib.sku}</span>
-                <span class="sizes__cap mono">{spec(sib, 'capacity')?.value ?? '—'} L</span>
+                <span class="sizes__cap mono">{sib.size}" · {spec(sib, 'capacity')?.value ?? '—'} L</span>
               </a>
             ))}
           </div>
           <p class="small muted" style="margin-top:var(--space-3)">
-            {en ? 'Same filtration in every size. Larger simply lasts longer.'
-                : 'Ίδιο φιλτράρισμα σε κάθε μέγεθος. Το μεγαλύτερο απλώς κρατάει περισσότερο.'}
+            {en ? 'Same filtration in every size — the number is the cartridge length in inches, and the longer ones hold more. Your installer checks the clearance under your sink.'
+                : 'Ίδιο φιλτράρισμα σε κάθε μέγεθος — ο αριθμός είναι το μήκος σε ίντσες, και τα μακρύτερα χωρούν περισσότερο. Ο τεχνικός ελέγχει τον διαθέσιμο χώρο.'}
           </p>
         </div>
 
