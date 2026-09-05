@@ -1,0 +1,194 @@
+---
+/**
+ * Photo slot with designed fallback art.
+ *
+ * Drop a real photograph in by saving it to /public/images/ and passing
+ * `src`. Until then this renders a bold abstract composition in the same
+ * aspect ratio and tint, so the page reads as art-directed rather than
+ * unfinished, and swapping in photography is a one-line change per slot.
+ */
+interface Props {
+  src?: string;
+  alt?: string;
+  art: 'cartridge' | 'family' | 'child' | 'tap' | 'installer' | 'terrace' | 'bottles' | 'ripple';
+  tint?: 'sand' | 'blush' | 'sky' | 'mint' | 'lilac' | 'butter' | 'sea';
+  ratio?: string;
+  class?: string;
+}
+const { src, alt = '', art, tint = 'sky', ratio = '4 / 5', class: cls = '' } = Astro.props;
+
+/* [ground, mid, deep, accent] */
+const tints: Record<string, [string, string, string, string]> = {
+  sand:   ['#F7EFE3', '#EADCC4', '#C9A876', '#8A6A3C'],
+  blush:  ['#FBE8E3', '#F3D2C8', '#D79E8B', '#9E5E48'],
+  sky:    ['#E4F0F9', '#C6DFF0', '#7FB4D6', '#356F99'],
+  mint:   ['#E4F2EA', '#C6E2D2', '#84BFA2', '#3B7C5D'],
+  lilac:  ['#ECE9F7', '#D5CEEE', '#9E92CE', '#584B92'],
+  butter: ['#FCF2DC', '#F4E3B8', '#DCBB6A', '#96742A'],
+  /* For art sitting on a deep band — keeps it from floating as a pale box */
+  sea:    ['#0A3A53', '#0E4A67', '#3E90B4', '#8FD3EC'],
+};
+const [g, mid, deep, accent] = tints[tint];
+const u = Math.random().toString(36).slice(2, 8);
+
+/* The art is composed for a 400x500 portrait box. Cropping it (`slice`) is
+   right for portrait and square frames, but in a wide frame it zooms the
+   composition to pieces — so wide frames contain it instead. */
+const [rw, rh] = ratio.split('/').map(n => parseFloat(n.trim()));
+const wide = rw / rh > 1.25;
+const fit = wide ? 'xMidYMid meet' : 'xMidYMid slice';
+---
+<figure class={`frame ${cls}`} style={`aspect-ratio:${ratio};background:${g}`}>
+  {src ? (
+    <img src={src} alt={alt} loading="lazy" decoding="async" />
+  ) : (
+    <svg viewBox="0 0 400 500" preserveAspectRatio={fit} role="img" aria-label={alt} style="width:100%;height:100%;display:block">
+      <defs>
+        <linearGradient id={`bg${u}`} x1="0" y1="0" x2=".3" y2="1">
+          <stop offset="0" stop-color={g} /><stop offset="1" stop-color={mid} />
+        </linearGradient>
+        <linearGradient id={`sh${u}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff" stop-opacity=".9" />
+          <stop offset="1" stop-color="#fff" stop-opacity=".1" />
+        </linearGradient>
+        <clipPath id={`cp${u}`}><rect width="400" height="500" /></clipPath>
+      </defs>
+
+      <g clip-path={`url(#cp${u})`}>
+        <rect width="400" height="500" fill={`url(#bg${u})`} />
+
+        {/* Ambient blobs — the same in every variant, so the set reads as one family */}
+        <circle cx="60" cy="70" r="150" fill={deep} opacity=".16" />
+        <circle cx="360" cy="440" r="180" fill={deep} opacity=".13" />
+        <circle cx="330" cy="90" r="70" fill="#fff" opacity=".45" />
+
+        {art === 'cartridge' && (
+          <g>
+            <ellipse cx="200" cy="404" rx="96" ry="18" fill={accent} opacity=".16" />
+            <rect x="146" y="126" width="108" height="266" rx="54" fill="#fff" opacity=".96" />
+            <rect x="146" y="126" width="108" height="266" rx="54" fill={`url(#sh${u})`} opacity=".5" />
+            <rect x="170" y="88" width="60" height="46" rx="16" fill={deep} opacity=".85" />
+            <rect x="146" y="186" width="108" height="14" fill={deep} opacity=".22" />
+            <rect x="146" y="318" width="108" height="14" fill={deep} opacity=".22" />
+            <g fill={accent} opacity=".5">
+              <circle cx="200" cy="238" r="9" /><circle cx="176" cy="272" r="6" />
+              <circle cx="224" cy="280" r="6" /><circle cx="200" cy="300" r="7" />
+            </g>
+          </g>
+        )}
+
+        {art === 'family' && (
+          <g>
+            <rect x="40" y="352" width="320" height="14" rx="7" fill={accent} opacity=".3" />
+            <g fill={deep}>
+              <circle cx="122" cy="214" r="40" opacity=".78" />
+              <path d="M62 352c0-38 27-66 60-66s60 28 60 66z" opacity=".78" />
+              <circle cx="228" cy="192" r="48" opacity=".9" />
+              <path d="M156 352c0-46 32-80 72-80s72 34 72 80z" opacity=".9" />
+              <circle cx="318" cy="238" r="30" opacity=".62" />
+              <path d="M274 352c0-28 20-50 44-50s44 22 44 50z" opacity=".62" />
+            </g>
+            <g>
+              <path d="M180 352v-64h44v64z" fill="#fff" opacity=".95" />
+              <path d="M186 306h32v46h-32z" fill={accent} opacity=".45" />
+              <rect x="176" y="278" width="52" height="12" rx="6" fill="#fff" />
+            </g>
+          </g>
+        )}
+
+        {art === 'child' && (
+          <g>
+            <circle cx="176" cy="196" r="64" fill={deep} opacity=".85" />
+            <path d="M92 396c0-56 38-96 84-96s84 40 84 96z" fill={deep} opacity=".85" />
+            <g>
+              <path d="M268 214h58l-8 116a20 20 0 01-20 18h-2a20 20 0 01-20-18z" fill="#fff" opacity=".96" />
+              <path d="M272 262h50l-6 68a20 20 0 01-20 18h-2a18 18 0 01-18-18z" fill={accent} opacity=".5" />
+              <ellipse cx="297" cy="214" rx="29" ry="7" fill="#fff" />
+            </g>
+            <g fill={accent} opacity=".45">
+              <circle cx="340" cy="140" r="10" /><circle cx="364" cy="180" r="6" /><circle cx="324" cy="186" r="5" />
+            </g>
+          </g>
+        )}
+
+        {art === 'tap' && (
+          <g>
+            <rect x="60" y="392" width="280" height="16" rx="8" fill={accent} opacity=".3" />
+            <path d="M118 96h26v96c0 44 44 40 44 84h-30c0-26-40-26-40-84z" fill={deep} opacity=".85" />
+            <rect x="100" y="80" width="62" height="20" rx="10" fill={deep} opacity=".9" />
+            <g fill={accent} opacity=".55">
+              <rect x="176" y="238" width="12" height="30" rx="6" />
+              <rect x="176" y="280" width="12" height="26" rx="6" />
+              <rect x="176" y="318" width="12" height="20" rx="6" />
+            </g>
+            <path d="M138 336h96l-10 56a18 18 0 01-18 14h-40a18 18 0 01-18-14z" fill="#fff" opacity=".96" />
+            <path d="M143 362h86l-7 30a18 18 0 01-18 14h-36a18 18 0 01-18-14z" fill={accent} opacity=".45" />
+            <ellipse cx="186" cy="336" rx="48" ry="9" fill="#fff" />
+            <path d="M282 268c22-28 22-48 0-72-22 24-22 44 0 72z" fill={deep} opacity=".35" />
+          </g>
+        )}
+
+        {art === 'installer' && (
+          <g>
+            <rect x="44" y="150" width="312" height="228" rx="14" fill="#fff" opacity=".8" />
+            <rect x="44" y="150" width="312" height="228" rx="14" fill="none" stroke={deep} stroke-width="3" opacity=".3" />
+            <rect x="44" y="366" width="312" height="14" rx="7" fill={accent} opacity=".35" />
+            {/* pipework */}
+            <path d="M96 150v96h48" fill="none" stroke={deep} stroke-width="9" opacity=".35" stroke-linecap="round" />
+            {/* the cartridge being fitted */}
+            <rect x="132" y="228" width="56" height="118" rx="28" fill="#fff" />
+            <rect x="132" y="228" width="56" height="118" rx="28" fill="none" stroke={deep} stroke-width="3" opacity=".45" />
+            <rect x="146" y="206" width="28" height="26" rx="8" fill={deep} opacity=".7" />
+            {/* installer */}
+            <circle cx="286" cy="214" r="34" fill={deep} opacity=".88" />
+            <path d="M228 366c0-38 26-66 58-66s58 28 58 66z" fill={deep} opacity=".88" />
+            <path d="M232 300l-42 20" stroke={deep} stroke-width="14" opacity=".88" stroke-linecap="round" fill="none" />
+            <circle cx="182" cy="324" r="12" fill={accent} opacity=".8" />
+          </g>
+        )}
+
+        {art === 'terrace' && (
+          <g>
+            <rect x="40" y="382" width="320" height="14" rx="7" fill={accent} opacity=".3" />
+            <path d="M170 206h64l-9 156a18 18 0 01-18 16h-10a18 18 0 01-18-16z" fill="#fff" opacity=".96" />
+            <path d="M175 272h54l-6 90a18 18 0 01-18 16h-6a18 18 0 01-18-16z" fill={accent} opacity=".45" />
+            <ellipse cx="202" cy="206" rx="32" ry="7" fill="#fff" />
+            <g fill="#fff" opacity=".9">
+              <path d="M96 296h34l-5 76a14 14 0 01-14 12h-1a14 14 0 01-13-12z" />
+              <path d="M270 296h34l-5 76a14 14 0 01-14 12h-1a14 14 0 01-13-12z" />
+            </g>
+            <g fill={accent} opacity=".4">
+              <circle cx="113" cy="262" r="20" /><circle cx="287" cy="262" r="20" />
+            </g>
+            <path d="M40 84c48 30 96 30 144 0s96-30 144 0" fill="none" stroke={deep} stroke-width="5" opacity=".3" stroke-linecap="round" />
+          </g>
+        )}
+
+        {art === 'bottles' && (
+          <g>
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <g transform={`translate(${34 + (i % 3) * 118} ${150 + Math.floor(i / 3) * 150}) rotate(${i % 2 ? 8 : -6} 40 70)`}>
+                <path d="M26 0h28v20l14 18v88a14 14 0 01-14 14H26a14 14 0 01-14-14V38L26 20z" fill="#fff" opacity=".9" />
+                <path d="M12 62h56v58a14 14 0 01-14 14H26a14 14 0 01-14-14z" fill={deep} opacity=".22" />
+                <rect x="24" y="0" width="32" height="12" rx="6" fill={accent} opacity=".55" />
+              </g>
+            ))}
+          </g>
+        )}
+
+        {art === 'ripple' && (
+          <g>
+            {[50, 96, 142, 188, 234].map((r, i) => (
+              <circle cx="200" cy="250" r={r} fill="none" stroke={deep} stroke-width={7 - i} opacity={0.5 - i * 0.08} />
+            ))}
+            <circle cx="200" cy="250" r="22" fill={deep} opacity=".7" />
+            <circle cx="200" cy="126" r="13" fill={accent} opacity=".65" />
+          </g>
+        )}
+
+        {/* Light sweep, ties the set together */}
+        <path d="M-40 470 Q 140 380 400 452 L400 500 L-40 500 Z" fill="#fff" opacity=".35" />
+      </g>
+    </svg>
+  )}
+</figure>

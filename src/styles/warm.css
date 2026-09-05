@@ -1,0 +1,243 @@
+/* ============================================================
+   Warm consumer layer — the family-facing homepage.
+   Sits on top of tokens.css. The evidence-first system still
+   governs product and legal pages; this governs the storefront.
+   ============================================================ */
+
+:root {
+  /* Pastel grounds — one per product family, one per story card */
+  --tint-sand:   #F7EFE3;
+  --tint-blush:  #FBE8E3;
+  --tint-sky:    #E4F0F9;
+  --tint-mint:   #E4F2EA;
+  --tint-lilac:  #ECE9F7;
+  --tint-butter: #FCF2DC;
+
+  --ink-on-tint: #2A2118;
+
+  /* Deep water — hero and immersive bands */
+  --sea-900: #062033;
+  --sea-800: #08344F;
+  --sea-700: #0C4A64;
+  --sea-500: #1487A8;
+  --sea-300: #66C3D8;
+  --sea-100: #C9E8F1;
+
+  --radius-xl:  20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 40px;
+}
+
+/* ---------- Full-bleed section helper ---------- */
+.bleed { width: 100%; }
+
+/* ---------- Display type — bigger, friendlier, tighter ---------- */
+.display {
+  font-size: clamp(2.5rem, 1.4rem + 4.6vw, 5.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.038em;
+  font-weight: 700;
+  text-wrap: balance;
+}
+.display--sm {
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+.subhead {
+  font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.3125rem);
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+/* ---------- Ghost watermark type ---------- */
+.ghost {
+  position: absolute;
+  inset-inline: 0;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  font-size: clamp(5rem, 2rem + 17vw, 16rem);
+  line-height: 0.8;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  color: currentColor;
+  opacity: .07;
+}
+.ghost--top { top: 6%; }
+.ghost--mid { top: 50%; transform: translateY(-50%); }
+
+/* ---------- HERO ---------- */
+.hero-w {
+  position: relative;
+  isolation: isolate;
+  min-height: 94svh;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% -10%, #17A2C4 0%, transparent 55%),
+    linear-gradient(178deg, var(--sea-700) 0%, var(--sea-800) 46%, var(--sea-900) 100%);
+  color: #fff;
+  padding-block: var(--space-7) var(--space-9);
+}
+/* Caustics, cheaply. An feTurbulence + feDisplacementMap filter across a
+   full-bleed animated layer is very expensive to raster and stutters on
+   mid-range phones — layered radial gradients read the same and composite
+   on the GPU. */
+.hero-w__caustics {
+  position: absolute; inset: -20%;
+  z-index: -1; opacity: .5;
+  mix-blend-mode: soft-light;
+  background:
+    radial-gradient(38% 22% at 22% 18%, rgba(190,240,255,.55), transparent 60%),
+    radial-gradient(30% 18% at 74% 30%, rgba(190,240,255,.42), transparent 62%),
+    radial-gradient(46% 26% at 48% 62%, rgba(150,225,250,.40), transparent 64%),
+    radial-gradient(26% 16% at 16% 74%, rgba(190,240,255,.36), transparent 62%),
+    radial-gradient(34% 20% at 84% 82%, rgba(160,230,252,.34), transparent 64%);
+  filter: blur(18px);
+  will-change: transform;
+  animation: drift 38s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) { .hero-w__caustics { animation: none; } }
+.hero-w__glow {
+  position: absolute; z-index: -1;
+  width: min(78vw, 880px); aspect-ratio: 1;
+  left: 50%; top: 6%; translate: -50% 0;
+  background: radial-gradient(circle, rgba(140,225,246,.42) 0%, rgba(140,225,246,0) 68%);
+  filter: blur(12px);
+}
+@keyframes drift {
+  from { transform: translate3d(-2.5%, -1.5%, 0) scale(1.05); }
+  to   { transform: translate3d(2.5%, 2%, 0) scale(1.14); }
+}
+.hero-w__inner { text-align: center; max-width: 1000px; margin-inline: auto; }
+.hero-w__eyebrow {
+  display: inline-flex; align-items: center; gap: .55em;
+  font-family: var(--font-mono); font-size: var(--fs-micro);
+  letter-spacing: .14em; color: var(--sea-100);
+  border: 1px solid rgba(255,255,255,.22);
+  padding: .5em 1em; border-radius: 999px;
+  background: rgba(255,255,255,.06); backdrop-filter: blur(6px);
+}
+.hero-w__h { margin-top: var(--space-5); color: #fff; }
+.hero-w__sub {
+  margin: var(--space-5) auto 0; max-width: 46ch;
+  color: rgba(255,255,255,.86);
+}
+.hero-w__cta { margin-top: var(--space-6); justify-content: center; }
+.hero-w__note { margin-top: var(--space-4); color: rgba(255,255,255,.62); }
+
+/* Glass illustration — sits above the headline, product-first like the reference */
+.hero-w__glass {
+  width: min(34vw, 190px);
+  margin-inline: auto;
+  margin-bottom: var(--space-5);
+  animation: bob 9s ease-in-out infinite alternate;
+  filter: drop-shadow(0 18px 40px rgba(0,0,0,.28));
+}
+@media (prefers-reduced-motion: reduce) { .hero-w__glass { animation: none; } }
+@keyframes bob { from { transform: translateY(-8px); } to { transform: translateY(10px); } }
+
+/* ---------- Feature strip (overlaps the hero) ---------- */
+.strip {
+  position: relative; z-index: 3;
+  margin-top: calc(var(--space-8) * -1);
+  background: var(--surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 18px 48px rgba(6,32,51,.14);
+  padding: var(--space-5) var(--space-4);
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+@media (min-width: 860px) { .strip { grid-template-columns: repeat(4, 1fr); padding: var(--space-6); } }
+.strip__item { display: grid; justify-items: center; text-align: center; gap: var(--space-2); }
+.strip__ico { width: 30px; height: 30px; color: var(--sea-500); }
+.strip__label { font-weight: 650; font-size: var(--fs-small); color: var(--ink-900); }
+.strip__sub { font-size: var(--fs-micro); color: var(--ink-500); }
+
+/* ---------- Story cards ---------- */
+.story {
+  background: var(--surface);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.story__media { position: relative; }
+.story__body { padding: var(--space-5) var(--space-2) 0; }
+.story__h { font-size: var(--fs-h3); letter-spacing: -.02em; }
+.story__p { margin-top: var(--space-2); font-size: var(--fs-small); color: var(--ink-700); }
+
+/* ---------- Tinted product cards ---------- */
+.tintcard {
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  display: grid; gap: var(--space-4);
+  text-decoration: none; color: var(--ink-on-tint);
+  transition: transform var(--motion-base) var(--ease), box-shadow var(--motion-base) var(--ease);
+  position: relative;
+}
+.tintcard:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(6,32,51,.12); color: var(--ink-on-tint); }
+.tintcard__art { aspect-ratio: 1; display: grid; place-items: center; }
+.tintcard__name { font-family: var(--font-mono); font-weight: 600; font-size: var(--fs-small); }
+.tintcard__for { font-size: var(--fs-micro); opacity: .72; }
+
+/* ---------- Editorial / masonry grid ---------- */
+.editorial { display: grid; gap: var(--space-5); }
+@media (min-width: 900px) {
+  .editorial { grid-template-columns: repeat(12, 1fr); gap: var(--space-6); align-items: start; }
+  .editorial__a { grid-column: 1 / 7; }
+  .editorial__b { grid-column: 7 / 13; margin-top: var(--space-8); }
+  .editorial__c { grid-column: 2 / 8; }
+}
+.tile {
+  background: var(--surface);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(6,32,51,.07);
+}
+.tile__body { padding: var(--space-5); }
+.tile__h { font-size: var(--fs-h4); letter-spacing: -.015em; }
+.tile__p { margin-top: var(--space-2); font-size: var(--fs-small); color: var(--ink-700); }
+
+/* ---------- Immersive deep bands ---------- */
+.band {
+  position: relative; isolation: isolate; overflow: hidden;
+  color: #fff;
+  background: linear-gradient(168deg, var(--sea-700), var(--sea-900));
+  padding-block: var(--space-9);
+}
+.band h2, .band h3 { color: #fff; }
+.band__ripples { position: absolute; inset: 0; z-index: -1; opacity: .28; }
+
+/* ---------- Soft section on tint ---------- */
+.soft { background: var(--tint-sky); }
+.soft--sand { background: var(--tint-sand); }
+.soft--mint { background: var(--tint-mint); }
+
+/* ---------- Rounded media frame ---------- */
+.frame { border-radius: var(--radius-xl); overflow: hidden; position: relative; }
+.frame > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ---------- Big pill buttons for the consumer surface ---------- */
+.btn--pill { border-radius: 999px; padding-inline: var(--space-6); font-weight: 650; }
+.btn--lg { min-height: 52px; font-size: var(--fs-body-lg); padding-inline: var(--space-6); }
+.btn--white { background: #fff; color: var(--sea-900); }
+.btn--white:hover { background: var(--sea-100); color: var(--sea-900); }
+
+/* ---------- Scroll reveal ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal.is-in { opacity: 1; transform: none; }
+}
+
+/* ---------- Stat row ---------- */
+.stats { display: grid; gap: var(--space-6); text-align: center; max-width: 900px; margin-inline: auto; }
+@media (min-width: 760px) { .stats { grid-template-columns: repeat(3, 1fr); gap: var(--space-6); } }
+.stat__k { font-family: var(--font-mono); font-size: clamp(2.25rem,1.5rem+2.6vw,3.5rem); font-weight: 600; letter-spacing: -.03em; }
+.stat__l { margin-top: var(--space-2); font-size: var(--fs-small); opacity: .82; }
+
+/* The header is sticky, so anchored headings need clearance. */
+h1, h2, h3 { scroll-margin-top: 88px; }

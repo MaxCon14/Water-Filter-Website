@@ -1,211 +1,374 @@
 ---
 import Base from '../layouts/Base.astro';
-import Readout from './Readout.astro';
-import CTABand from './CTABand.astro';
-import { path, type Locale } from '../i18n/ui';
+import Figure from './Figure.astro';
+import '../styles/warm.css';
+import { path, sub, type Locale } from '../i18n/ui';
 import { useT } from '../i18n/strings';
-import { problems, facts, districts } from '../data/site';
-import { series } from '../data/products';
+import { districts, facts } from '../data/site';
+import { series, bySeries, spec } from '../data/products';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const t = useT(locale);
 const en = locale === 'en';
-const hardness = facts.find(f => f.id === 'hardness')!;
-const desal = facts.find(f => f.id === 'desal')!;
 const bottled = facts.find(f => f.id === 'bottled')!;
+const desal = facts.find(f => f.id === 'desal')!;
+
+/* Range cards — one tint per series, warmest first */
+const tints = ['sky', 'butter', 'mint'] as const;
+const range = series.map((s, i) => ({
+  s,
+  tint: tints[i],
+  kids: bySeries(s.key),
+  friendly: {
+    fx:  { en: 'For drinking and cooking',  el: 'Για πόση και μαγείρεμα' },
+    hf2: { en: 'For busy kitchens',         el: 'Για πολυσύχναστες κουζίνες' },
+    h:   { en: 'For one specific problem',  el: 'Για ένα συγκεκριμένο πρόβλημα' },
+  }[s.key][locale],
+}));
+
+const strip = en
+  ? [['Independently certified', 'Tested to NSF/ANSI standards'],
+     ['Fitted by a local installer', 'Someone in your district'],
+     ['Free water test', 'Before you decide anything'],
+     ['Filters that last', 'Changed once, not fussed over']]
+  : [['Ανεξάρτητα πιστοποιημένο', 'Ελεγμένο κατά NSF/ANSI'],
+     ['Τοπικός τεχνικός', 'Κάποιος στην επαρχία σας'],
+     ['Δωρεάν έλεγχος νερού', 'Πριν αποφασίσετε οτιδήποτε'],
+     ['Φίλτρα που κρατούν', 'Μία αλλαγή, καμία έγνοια']];
 ---
 <Base
   locale={locale}
   routeKey="home"
-  title={en ? 'Water filtration for Cyprus, with the evidence attached' : 'Φίλτρα νερού για την Κύπρο, με τα στοιχεία μπροστά'}
+  title={en ? 'Water your family actually wants to drink' : 'Νερό που η οικογένειά σας θέλει να πίνει'}
   description={en
-    ? 'Certified point-of-use water filtration, installed and serviced by a local dealer. Book a free water test and find out what is actually in your water.'
-    : 'Πιστοποιημένα φίλτρα νερού στο σημείο χρήσης, με εγκατάσταση και συντήρηση από τοπικό αντιπρόσωπο. Κλείστε δωρεάν έλεγχο και δείτε τι έχει πραγματικά το νερό σας.'}
->
-  <!-- HERO — the thesis is the measurement, not a product shot -->
-  <section class="hero">
-    <div class="wrap hero__inner">
-      <div class="hero__copy">
-        <p class="eyebrow">{en ? 'Cyprus water, measured' : 'Το νερό της Κύπρου, μετρημένο'}</p>
-        <h1 class="hero__h">
-          {en
-            ? 'Cyprus desalinates most of its drinking water. Your kettle still furs up in a fortnight.'
-            : 'Η Κύπρος αφαλατώνει το περισσότερο πόσιμο νερό της. Ο βραστήρας σας γεμίζει άλατα σε δεκαπέντε μέρες.'}
-        </h1>
-        <p class="lead hero__lead">
-          {en
-            ? 'Minerals are added back after treatment, to protect the pipes. So the water arriving at your tap is still hard, still chlorinated, and still the reason you are buying bottled. Fluux is certified filtration for that water — fitted and serviced by a dealer in your district.'
-            : 'Μετά την επεξεργασία προστίθενται ξανά μέταλλα, για να προστατευθεί το δίκτυο. Έτσι το νερό που φτάνει στη βρύση σας παραμένει σκληρό, χλωριωμένο, και ο λόγος που αγοράζετε εμφιαλωμένο. Το Fluux είναι πιστοποιημένο φιλτράρισμα γι᾽ αυτό το νερό — με τοποθέτηση και συντήρηση από αντιπρόσωπο στην επαρχία σας.'}
-        </p>
-        <div class="cluster hero__cta">
-          <a class="btn btn--primary" href={path(locale, 'waterTest')}>{t('cta.waterTest')}</a>
-          <a class="btn btn--ghost" href={path(locale, 'selector')}>{t('cta.findFilter')}</a>
-        </div>
-        <p class="small muted hero__note">
-          {en ? 'No obligation. One dealer, not five.' : 'Χωρίς δέσμευση. Ένας αντιπρόσωπος, όχι πέντε.'}
-        </p>
-      </div>
+    ? 'Certified water filtration for Cypriot homes, fitted and looked after by a local installer. Book a free water test and find out what is in yours.'
+    : 'Πιστοποιημένα φίλτρα νερού για κυπριακά σπίτια, με τοποθέτηση και φροντίδα από τοπικό τεχνικό. Κλείστε δωρεάν έλεγχο νερού.'}>
 
-      <!-- The signature: an instrument panel, honest about its own sourcing -->
-      <aside class="panel" aria-label={en ? 'Cyprus water at a glance' : 'Το νερό της Κύπρου με μια ματιά'}>
-        <div class="panel__head">
-          <span class="mono panel__title">{en ? 'ISLAND READINGS' : 'ΜΕΤΡΗΣΕΙΣ ΝΗΣΙΟΥ'}</span>
-        </div>
-        <Readout locale={locale} value={desal.value} unit={desal.unit} label={desal.label[locale]} source={desal.source[locale]} tier={desal.tier} />
-        <Readout locale={locale} value={hardness.value} unit={hardness.unit} label={hardness.label[locale]} source={hardness.source[locale]} tier={hardness.tier} />
-        <Readout locale={locale} value={bottled.value} unit={bottled.unit} label={bottled.label[locale]} source={bottled.source[locale]} tier={bottled.tier} />
-        <p class="panel__foot small">
-          {en
-            ? 'We show where every number came from. The hardness figure is from a competitor’s marketing, so treat it as a direction, not a measurement. Yours is the only one that matters — a dealer will take it, free.'
-            : 'Δείχνουμε από πού προέρχεται κάθε αριθμός. Το στοιχείο σκληρότητας προέρχεται από διαφημιστική σελίδα ανταγωνιστή, οπότε δείτε το ως κατεύθυνση, όχι ως μέτρηση. Μόνο η δική σας μέτρηση μετράει — και γίνεται δωρεάν.'}
-        </p>
-      </aside>
-    </div>
-  </section>
+  <!-- ═══════════ HERO ═══════════ -->
+  <section class="hero-w">
+    <div class="hero-w__glow" aria-hidden="true"></div>
 
-  <!-- PROBLEM TRIAGE — symptom-led, in the customer's words -->
-  <section class="section section--pale">
-    <div class="wrap">
-      <p class="eyebrow">{en ? 'Start with the symptom' : 'Ξεκινήστε από το σύμπτωμα'}</p>
-      <h2 style="margin-top:var(--space-3);max-width:24ch">
-        {en ? 'What made you look this up?' : 'Τι σας έκανε να το ψάξετε;'}
-      </h2>
-      <div class="grid grid--3" style="margin-top:var(--space-6)">
-        {problems.map(p => (
-          <article class="card card--link">
-            <h3 class="card__title">
-              <a href={path(locale, p.routeKey)}>{p.symptom[locale]}</a>
-            </h3>
-            <p class="card__body">{p.title[locale]}</p>
-            {p.answers === 'partly' && (
-              <p class="card__body" style="margin-top:var(--space-3)">
-                <span class="tier tier--pending">{en ? 'We answer this only in part' : 'Το απαντάμε μόνο εν μέρει'}</span>
-              </p>
-            )}
-            <p class="card__foot">{t('cta.readMore')} &rarr;</p>
-          </article>
-        ))}
-      </div>
-    </div>
-  </section>
+    <div class="hero-w__caustics" aria-hidden="true"></div>
 
-  <!-- HOW IT WORKS — pre-empts "am I about to be cold-called" -->
-  <section class="section">
-    <div class="wrap">
-      <p class="eyebrow">{en ? 'How this works' : 'Πώς λειτουργεί'}</p>
-      <h2 style="margin-top:var(--space-3);max-width:26ch">
-        {en ? 'Three steps, and you can stop at any of them.' : 'Τρία βήματα, και μπορείτε να σταματήσετε σε οποιοδήποτε.'}
-      </h2>
-      <ol class="steps">
-        <li>
-          <span class="steps__n mono">01</span>
-          <h3>{en ? 'Tell us about your water' : 'Πείτε μας για το νερό σας'}</h3>
-          <p class="small">{en ? 'Four questions, about a minute. Or just call.' : 'Τέσσερις ερωτήσεις, περίπου ένα λεπτό. Ή απλώς τηλεφωνήστε.'}</p>
-        </li>
-        <li>
-          <span class="steps__n mono">02</span>
-          <h3>{en ? 'A local dealer tests it, free' : 'Τοπικός αντιπρόσωπος το ελέγχει, δωρεάν'}</h3>
-          <p class="small">{en ? 'At your kitchen tap. They explain what they find.' : 'Στη βρύση της κουζίνας σας. Σας εξηγεί τι βρήκε.'}</p>
-        </li>
-        <li>
-          <span class="steps__n mono">03</span>
-          <h3>{en ? 'They quote. You decide.' : 'Δίνει προσφορά. Εσείς αποφασίζετε.'}</h3>
-          <p class="small">{en ? 'Only if you ask for one.' : 'Μόνο αν τη ζητήσετε.'}</p>
-        </li>
-      </ol>
-      <div class="notice" style="margin-top:var(--space-6);max-width:60ch">
-        <p class="notice__title">{en ? 'What does not happen' : 'Τι δεν θα συμβεί'}</p>
-        <p>{en
-          ? 'Your details go to one dealer, and we tell you which one. You will not be called by five companies, because we never sell the same enquiry twice.'
-          : 'Τα στοιχεία σας πηγαίνουν σε έναν αντιπρόσωπο, και σας λέμε σε ποιον. Δεν θα σας καλέσουν πέντε εταιρείες, γιατί ποτέ δεν πουλάμε το ίδιο αίτημα δύο φορές.'}</p>
-      </div>
-    </div>
-  </section>
 
-  <!-- PRODUCT FRAMING — problem then capacity, never a 9-cell grid -->
-  <section class="section section--warm">
-    <div class="wrap">
-      <p class="eyebrow">{en ? 'The range' : 'Η γκάμα'}</p>
-      <h2 style="margin-top:var(--space-3);max-width:30ch">
-        {en ? 'Three technologies, each answering a different problem.' : 'Τρεις τεχνολογίες, καθεμιά για διαφορετικό πρόβλημα.'}
-      </h2>
-      <p class="lead" style="margin-top:var(--space-3);max-width:60ch">
+
+    <div class="wrap hero-w__inner">
+      <svg class="hero-w__glass" viewBox="0 0 300 420" aria-hidden="true">
+      <defs>
+        <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#9BE7FB" stop-opacity=".95" />
+          <stop offset="1" stop-color="#2FA6CC" stop-opacity=".75" />
+        </linearGradient>
+        <linearGradient id="glassEdge" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity=".9" />
+          <stop offset=".5" stop-color="#fff" stop-opacity=".25" />
+          <stop offset="1" stop-color="#fff" stop-opacity=".9" />
+        </linearGradient>
+      </defs>
+      <path d="M88 120h124l-14 250a26 26 0 01-26 24h-44a26 26 0 01-26-24z" fill="url(#water)" opacity=".55" />
+      <path d="M94 196h112l-11 174a26 26 0 01-26 24h-38a26 26 0 01-26-24z" fill="url(#water)" />
+      <path d="M88 120h124l-14 250a26 26 0 01-26 24h-44a26 26 0 01-26-24z" fill="none" stroke="url(#glassEdge)" stroke-width="3" />
+      <ellipse cx="150" cy="120" rx="62" ry="13" fill="none" stroke="#fff" stroke-width="3" opacity=".85" />
+      <ellipse cx="150" cy="196" rx="56" ry="11" fill="#CFF3FF" opacity=".55" />
+      <g fill="#DFF6FF" opacity=".9">
+        <circle cx="150" cy="52" r="9" /><circle cx="150" cy="80" r="5" />
+      </g>
+      <g fill="#fff" opacity=".5">
+        <circle cx="126" cy="268" r="4" /><circle cx="176" cy="300" r="3" /><circle cx="140" cy="336" r="3.5" />
+      </g>
+    </svg>
+      <p class="hero-w__eyebrow">{en ? 'FOR CYPRIOT HOMES' : 'ΓΙΑ ΚΥΠΡΙΑΚΑ ΣΠΙΤΙΑ'}</p>
+      <h1 class="display hero-w__h">
+        {en ? <>Water your family<br />actually wants to drink</> : <>Νερό που η οικογένειά σας<br />θέλει να πίνει</>}
+      </h1>
+      <p class="subhead hero-w__sub">
         {en
-          ? 'They are not a good, better, best ladder — that would send a restaurant the wrong cartridge. Pick the technology for your problem first, then the size for how often you want to change it.'
-          : 'Δεν είναι κλίμακα «καλό, καλύτερο, άριστο» — έτσι ένα εστιατόριο θα έπαιρνε λάθος φίλτρο. Πρώτα η τεχνολογία για το πρόβλημά σας, μετά το μέγεθος για το πόσο συχνά θέλετε να το αλλάζετε.'}
+          ? 'No more crates of bottles in the hallway. Certified filtration at your kitchen tap, fitted and looked after by someone local.'
+          : 'Τέλος τα κιβώτια με μπουκάλια στον διάδρομο. Πιστοποιημένο φιλτράρισμα στη βρύση σας, με τοποθέτηση και φροντίδα από κάποιον δικό σας.'}
       </p>
-      <div class="grid grid--3" style="margin-top:var(--space-6)">
-        {series.map(s => (
-          <article class="card card--link">
-            <p class="mono small" style="color:var(--signal-600);font-weight:600">{s.name}</p>
-            <h3 class="card__title" style="margin-top:var(--space-2)">
-              <a href={path(locale, 'products', s.key)}>{s.headline[locale]}</a>
-            </h3>
-            <p class="card__body">{s.technology[locale]} · {s.micron} µm</p>
-            <p class="card__foot">{en ? 'See the series' : 'Δείτε τη σειρά'} &rarr;</p>
-          </article>
+      <div class="cluster hero-w__cta">
+        <a class="btn btn--primary btn--pill btn--lg" href={path(locale, 'waterTest')}>{t('cta.waterTest')}</a>
+        <a class="btn btn--onDeep btn--pill btn--lg" href={path(locale, 'selector')}>{t('cta.findFilter')}</a>
+      </div>
+      <p class="small hero-w__note">{en ? 'Free. No obligation. One installer, not five.' : 'Δωρεάν. Χωρίς δέσμευση. Ένας τεχνικός, όχι πέντε.'}</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ FEATURE STRIP ═══════════ -->
+  <div class="wrap">
+    <div class="strip reveal">
+      {strip.map(([label, subl], i) => (
+        <div class="strip__item">
+          <svg class="strip__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            {i === 0 && <><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" /></>}
+            {i === 1 && <><path d="M12 21s-7-5.5-7-11a7 7 0 1114 0c0 5.5-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></>}
+            {i === 2 && <><path d="M12 3s5 6 5 9.5A5 5 0 017 12.5C7 9 12 3 12 3z" /><path d="M10.5 13.5h3" /></>}
+            {i === 3 && <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>}
+          </svg>
+          <span class="strip__label">{label}</span>
+          <span class="strip__sub">{subl}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ═══════════ THREE STORIES ═══════════ -->
+  <section class="section">
+    <div class="wrap">
+      <header style="text-align:center;max-width:44ch;margin-inline:auto">
+        <h2 class="display--sm">{en ? 'Your water, sorted.' : 'Το νερό σας, τακτοποιημένο.'}</h2>
+        <p class="subhead muted" style="margin-top:var(--space-4)">
+          {en ? 'Three things change the day it goes in.' : 'Τρία πράγματα αλλάζουν από την πρώτη μέρα.'}
+        </p>
+      </header>
+
+      <div class="grid grid--3 reveal" style="margin-top:var(--space-7)">
+        <article class="story">
+          <Figure art="tap" tint="sky" ratio="4 / 5"
+            alt={en ? 'Clear water filling a glass at a kitchen tap' : 'Καθαρό νερό γεμίζει ποτήρι στη βρύση'} />
+          <div class="story__body">
+            <h3 class="story__h">{en ? 'It tastes like nothing' : 'Δεν έχει καμία γεύση'}</h3>
+            <p class="story__p">
+              {en ? 'Which is exactly right. The chlorine goes, and so does the reason nobody finishes their glass.'
+                  : 'Και αυτό ακριβώς θέλουμε. Φεύγει το χλώριο, και μαζί ο λόγος που κανείς δεν τελειώνει το ποτήρι του.'}
+            </p>
+          </div>
+        </article>
+
+        <article class="story">
+          <Figure art="family" tint="sand" ratio="4 / 5"
+            alt={en ? 'A family around a table with a carafe of water' : 'Οικογένεια γύρω από τραπέζι με καράφα νερό'} />
+          <div class="story__body">
+            <h3 class="story__h">{en ? 'The bottles stop' : 'Τα μπουκάλια σταματούν'}</h3>
+            <p class="story__p">
+              {en ? `A household drinking bottled water spends around €${bottled.value} a year on it, plus the carrying and the storing.`
+                  : `Ένα νοικοκυριό ξοδεύει περίπου €${bottled.value} τον χρόνο σε εμφιαλωμένο — συν το κουβάλημα και την αποθήκευση.`}
+            </p>
+          </div>
+        </article>
+
+        <article class="story">
+          <Figure art="child" tint="mint" ratio="4 / 5"
+            alt={en ? 'A child drinking a glass of water' : 'Παιδί που πίνει ένα ποτήρι νερό'} />
+          <div class="story__body">
+            <h3 class="story__h">{en ? 'You stop wondering' : 'Παύετε να αναρωτιέστε'}</h3>
+            <p class="story__p">
+              {en ? 'Independently certified filtration, and a person who tested your actual water before fitting it.'
+                  : 'Ανεξάρτητα πιστοποιημένο φιλτράρισμα, και ένας άνθρωπος που έλεγξε το δικό σας νερό πριν το τοποθετήσει.'}
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ GHOST TYPE PRODUCT MOMENT ═══════════ -->
+  <section class="band">
+    <span class="ghost ghost--top" aria-hidden="true">{en ? 'PURE' : 'ΚΑΘΑΡΟ'}</span>
+    <svg class="band__ripples" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g fill="none" stroke="#8FE3FF" stroke-width="1.4">
+        {[80, 160, 240, 320, 400, 480].map((r, i) => (
+          <circle cx="600" cy="300" r={r} opacity={0.5 - i * 0.07} />
+        ))}
+      </g>
+    </svg>
+
+    <div class="wrap" style="position:relative">
+      <div style="display:grid;place-items:center;padding-block:var(--space-6)">
+        <svg viewBox="0 0 200 320" style="width:min(38vw,220px)" aria-hidden="true">
+          <rect x="62" y="60" width="76" height="200" rx="38" fill="rgba(255,255,255,.1)" stroke="#CFF3FF" stroke-width="2.5" />
+          <rect x="76" y="30" width="48" height="36" rx="10" fill="rgba(255,255,255,.16)" stroke="#CFF3FF" stroke-width="2.5" />
+          <line x1="62" y1="104" x2="138" y2="104" stroke="#CFF3FF" stroke-width="2" opacity=".7" />
+          <line x1="62" y1="216" x2="138" y2="216" stroke="#CFF3FF" stroke-width="2" opacity=".7" />
+          <g fill="#9BE7FB" opacity=".8">
+            <circle cx="100" cy="140" r="4" /><circle cx="84" cy="168" r="3" />
+            <circle cx="116" cy="176" r="3" /><circle cx="100" cy="196" r="3.5" />
+          </g>
+        </svg>
+      </div>
+
+      <div style="max-width:56ch;margin-inline:auto;text-align:center">
+        <h2 class="display--sm">{en ? 'As pure as we can honestly make it' : 'Όσο πιο καθαρό μπορούμε ειλικρινά'}</h2>
+        <p class="subhead" style="margin-top:var(--space-4);color:rgba(255,255,255,.82)">
+          {en
+            ? 'Cyprus desalinates most of its drinking water, then adds minerals back to protect the pipes. So what reaches your tap is still hard, still chlorinated. That is the water we filter.'
+            : 'Η Κύπρος αφαλατώνει το περισσότερο πόσιμο νερό της και μετά προσθέτει ξανά μέταλλα για να προστατεύσει το δίκτυο. Έτσι, αυτό που φτάνει στη βρύση παραμένει σκληρό και χλωριωμένο. Αυτό το νερό φιλτράρουμε.'}
+        </p>
+      </div>
+
+      <div class="stats" style="margin-top:var(--space-8)">
+        <div class="stat">
+          <div class="stat__k">{desal.value}{desal.unit}</div>
+          <div class="stat__l">{desal.label[locale]}</div>
+        </div>
+        <div class="stat">
+          <div class="stat__k">0.1<span style="font-size:.45em;letter-spacing:0"> micron</span></div>
+          <div class="stat__l">{en ? 'the finest filtration in the range' : 'το πιο λεπτό φιλτράρισμα της γκάμας'}</div>
+        </div>
+        <div class="stat">
+          <div class="stat__k">€{bottled.value}</div>
+          <div class="stat__l">{en ? 'a year, on bottled water' : 'τον χρόνο, σε εμφιαλωμένο νερό'}</div>
+        </div>
+      </div>
+      <p class="small" style="margin-top:var(--space-5);text-align:center;color:rgba(255,255,255,.55)">
+        {en ? 'Sources for every figure are on the water pages. We show where each one came from.'
+            : 'Οι πηγές για κάθε στοιχείο βρίσκονται στις σελίδες για το νερό. Δείχνουμε από πού προέρχεται το καθένα.'}
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════ THE RANGE ═══════════ -->
+  <section class="section soft--sand">
+    <div class="wrap">
+      <header style="text-align:center;max-width:46ch;margin-inline:auto">
+        <h2 class="display--sm">{en ? 'A filter for every part of your home' : 'Ένα φίλτρο για κάθε γωνιά του σπιτιού'}</h2>
+        <p class="subhead muted" style="margin-top:var(--space-4)">
+          {en ? 'Pick the one that matches your problem. Your installer confirms it before anything is fitted.'
+              : 'Επιλέξτε αυτό που ταιριάζει στο πρόβλημά σας. Ο τεχνικός το επιβεβαιώνει πριν τοποθετηθεί οτιδήποτε.'}
+        </p>
+      </header>
+
+      <div class="grid grid--3 reveal" style="margin-top:var(--space-7)">
+        {range.map(({ s, tint, kids, friendly }) => (
+          <a class="tintcard" href={path(locale, 'products', s.key)} style={`background:var(--tint-${tint})`}>
+            <div class="tintcard__art">
+              <Figure art="cartridge" tint={tint} ratio="1 / 1" alt={`${s.name} ${en ? 'filter cartridge' : 'φίλτρο'}`} />
+            </div>
+            <div>
+              <p class="tintcard__name">{s.name}</p>
+              <h3 class="story__h" style="margin-top:var(--space-1);font-size:var(--fs-h4)">{friendly}</h3>
+              <p class="tintcard__for" style="margin-top:var(--space-2)">
+                {kids.length} {en ? 'sizes' : 'μεγέθη'} · {s.micron} µm
+              </p>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <p style="text-align:center;margin-top:var(--space-7)">
+        <a class="btn btn--secondary btn--pill btn--lg" href={path(locale, 'selector')}>
+          {en ? 'Help me choose' : 'Βοηθήστε με να επιλέξω'}
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════ EDITORIAL GRID ═══════════ -->
+  <section class="section">
+    <div class="wrap">
+      <header style="max-width:36ch">
+        <h2 class="display--sm">{en ? 'How it actually goes' : 'Πώς γίνεται στην πράξη'}</h2>
+        <p class="subhead muted" style="margin-top:var(--space-4)">
+          {en ? 'No showroom, no sales visit dressed up as a survey.' : 'Χωρίς εκθεσιακό χώρο, χωρίς επίσκεψη πώλησης μεταμφιεσμένη σε έλεγχο.'}
+        </p>
+      </header>
+
+      <div class="editorial" style="margin-top:var(--space-7)">
+        <article class="tile editorial__a reveal">
+          <Figure art="installer" tint="lilac" ratio="4 / 3"
+            alt={en ? 'An installer fitting a filter under a kitchen sink' : 'Τεχνικός τοποθετεί φίλτρο κάτω από τον νεροχύτη'} />
+          <div class="tile__body">
+            <h3 class="tile__h">{en ? 'Someone local fits it' : 'Το τοποθετεί κάποιος τοπικός'}</h3>
+            <p class="tile__p">
+              {en ? 'Usually under an hour, under the sink, with no change to your kitchen. They come back when the filter is due.'
+                  : 'Συνήθως κάτω από μία ώρα, κάτω από τον νεροχύτη, χωρίς καμία αλλαγή στην κουζίνα σας. Επιστρέφει όταν έρθει η ώρα αλλαγής.'}
+            </p>
+          </div>
+        </article>
+
+        <article class="tile editorial__b reveal">
+          <Figure art="terrace" tint="butter" ratio="3 / 4"
+            alt={en ? 'A carafe of water on a shaded terrace table' : 'Καράφα νερό σε σκιερό τραπέζι βεράντας'} />
+          <div class="tile__body">
+            <h3 class="tile__h">{en ? 'Then you forget about it' : 'Και μετά το ξεχνάτε'}</h3>
+            <p class="tile__p">
+              {en ? 'That is the whole idea. Water on the table, nobody thinking about where it came from.'
+                  : 'Αυτή είναι όλη η ιδέα. Νερό στο τραπέζι, χωρίς κανείς να σκέφτεται από πού ήρθε.'}
+            </p>
+          </div>
+        </article>
+
+        <article class="tile editorial__c reveal">
+          <Figure art="tap" tint="sky" ratio="16 / 10"
+            alt={en ? 'Filling a reusable bottle at the kitchen tap' : 'Γέμισμα επαναχρησιμοποιήσιμου μπουκαλιού στη βρύση'} />
+          <div class="tile__body">
+            <h3 class="tile__h">{en ? 'And the free test comes first' : 'Και ο δωρεάν έλεγχος προηγείται'}</h3>
+            <p class="tile__p">
+              {en ? 'Before any of it. They measure your water at your tap and tell you what it shows — including when the answer is that you do not need us.'
+                  : 'Πριν από όλα. Μετράει το νερό στη βρύση σας και σας λέει τι δείχνει — ακόμα κι αν η απάντηση είναι ότι δεν μας χρειάζεστε.'}
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCOPE HONESTY, WARMLY ═══════════ -->
+  <section class="section soft">
+    <div class="wrap" style="max-width:62ch;text-align:center">
+      <h2 class="display--sm">{en ? 'One thing we will not promise' : 'Ένα πράγμα που δεν θα υποσχεθούμε'}</h2>
+      <p class="subhead" style="margin-top:var(--space-4)">
+        {en
+          ? 'A filter under your sink cleans the water you drink. It will not descale your boiler, your washing machine or the solar heater on the roof — those are fed by water that never passes through it. If limescale is your main worry, say so at the water test and your installer will tell you honestly what would actually help.'
+          : 'Ένα φίλτρο κάτω από τον νεροχύτη καθαρίζει το νερό που πίνετε. Δεν καθαρίζει τα άλατα από τον θερμοσίφωνα, το πλυντήριο ή τον ηλιακό στην ταράτσα — αυτά τροφοδοτούνται με νερό που δεν περνά ποτέ από το φίλτρο. Αν τα άλατα είναι η κύρια έγνοιά σας, πείτε το στον έλεγχο και ο τεχνικός θα σας πει ειλικρινά τι θα βοηθούσε πραγματικά.'}
+      </p>
+      <p style="margin-top:var(--space-5)">
+        <a class="btn btn--ghost btn--pill" href={path(locale, 'limescale')}>
+          {en ? 'Read about limescale in Cyprus' : 'Διαβάστε για τα άλατα στην Κύπρο'}
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════ WASTE ═══════════ -->
+  <section class="band" style="background:linear-gradient(168deg,#0A3E58,#041A29)">
+    <span class="ghost ghost--mid" aria-hidden="true">{en ? 'REFILL' : 'ΞΑΝΑΓΕΜΙΣΕ'}</span>
+    <div class="wrap" style="position:relative;text-align:center;max-width:52ch">
+      <h2 class="display">{en ? <>Drink more.<br />Carry less.</> : <>Πιείτε περισσότερο.<br />Κουβαλήστε λιγότερο.</>}</h2>
+      <p class="subhead" style="margin-top:var(--space-5);color:rgba(255,255,255,.82)">
+        {en
+          ? 'Every household that switches takes hundreds of plastic bottles a year out of circulation. That part is just arithmetic.'
+          : 'Κάθε νοικοκυριό που αλλάζει, βγάζει εκατοντάδες πλαστικά μπουκάλια τον χρόνο από την κυκλοφορία. Αυτό είναι απλή αριθμητική.'}
+      </p>
+      <div class="cluster" style="justify-content:center;margin-top:var(--space-6)">
+        <a class="btn btn--primary btn--pill btn--lg" href={path(locale, 'waterTest')}>{t('cta.waterTest')}</a>
+      </div>
+    </div>
+    <div class="wrap" style="margin-top:var(--space-8);position:relative">
+      <Figure art="bottles" tint="sea" ratio="16 / 7"
+        alt={en ? 'Empty single-use plastic bottles' : 'Άδεια πλαστικά μπουκάλια μιας χρήσης'} />
+    </div>
+  </section>
+
+  <!-- ═══════════ DISTRICTS ═══════════ -->
+  <section class="section section--tight">
+    <div class="wrap" style="text-align:center">
+      <h2 class="display--sm">{en ? 'Find your installer' : 'Βρείτε τον τεχνικό σας'}</h2>
+      <p class="subhead muted" style="margin-top:var(--space-4);max-width:46ch;margin-inline:auto">
+        {en ? 'One enquiry, one installer, and we tell you which one.' : 'Ένα αίτημα, ένας τεχνικός, και σας λέμε ποιος.'}
+      </p>
+      <div class="cluster" style="justify-content:center;margin-top:var(--space-6)">
+        {districts.map(d => (
+          <a class="btn btn--ghost btn--pill btn--sm" href={`${path(locale, 'enquiry')}?district=${d.key}`}>{d.name[locale]}</a>
         ))}
       </div>
     </div>
   </section>
-
-  <!-- DEALER PROXIMITY -->
-  <section class="section">
-    <div class="wrap">
-      <div class="split">
-        <div>
-          <p class="eyebrow">{en ? 'Your district' : 'Η επαρχία σας'}</p>
-          <h2 style="margin-top:var(--space-3);max-width:22ch">
-            {en ? 'Someone local fits it, and comes back when it needs changing.' : 'Κάποιος τοπικός το τοποθετεί, και επιστρέφει όταν χρειάζεται αλλαγή.'}
-          </h2>
-          <p class="lead" style="margin-top:var(--space-4);max-width:52ch">
-            {en
-              ? 'This is the part a website cannot do for you. Water treatment depends on your water, your plumbing and how you use it, which is why there is no price on this site and no basket.'
-              : 'Αυτό είναι το κομμάτι που δεν μπορεί να κάνει ένας ιστότοπος. Η επεξεργασία νερού εξαρτάται από το νερό σας, τις σωληνώσεις σας και τη χρήση — γι᾽ αυτό δεν υπάρχει τιμή ούτε καλάθι εδώ.'}
-          </p>
-          <p style="margin-top:var(--space-5)">
-            <a class="btn btn--secondary" href={path(locale, 'dealers')}>{t('cta.findDealer')}</a>
-          </p>
-        </div>
-        <ul class="districts" aria-label={en ? 'Districts served' : 'Επαρχίες που εξυπηρετούμε'}>
-          {districts.map(d => (
-            <li><a href={path(locale, 'dealers')}>{d.name[locale]}</a></li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <CTABand locale={locale} />
 </Base>
 
-<style>
-  .hero { padding-block: var(--space-7) var(--space-8); border-bottom: 1px solid var(--ink-100); }
-  @media (min-width: 900px) { .hero { padding-block: var(--space-8) var(--space-9); } }
-  .hero__inner { display: grid; gap: var(--space-7); align-items: start; }
-  @media (min-width: 960px) { .hero__inner { grid-template-columns: 1.35fr 1fr; gap: var(--space-8); } }
-  .hero__h { font-size: var(--fs-display); line-height: var(--lh-display); letter-spacing: -0.028em; margin-top: var(--space-4); max-width: 18ch; }
-  .hero__lead { margin-top: var(--space-5); max-width: 56ch; }
-  .hero__cta { margin-top: var(--space-6); }
-  .hero__note { margin-top: var(--space-3); }
-
-  .panel { border: 1px solid var(--ink-100); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--ink-050); display: grid; gap: var(--space-4); align-content: start; }
-  .panel__head { display: flex; justify-content: space-between; align-items: center; padding-bottom: var(--space-3); border-bottom: 1px solid var(--ink-100); }
-  .panel__title { font-size: var(--fs-micro); letter-spacing: 0.1em; color: var(--ink-500); }
-  .panel__foot { color: var(--ink-500); border-top: 1px solid var(--ink-100); padding-top: var(--space-4); }
-
-  .steps { list-style: none; padding: 0; display: grid; gap: var(--space-5); margin-top: var(--space-6); counter-reset: none; }
-  @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); gap: var(--space-6); } }
-  .steps li { border-top: 2px solid var(--depth-700); padding-top: var(--space-4); }
-  .steps__n { display: block; font-size: var(--fs-micro); color: var(--signal-600); font-weight: 600; letter-spacing: .08em; margin-bottom: var(--space-2); }
-  .steps h3 { font-size: var(--fs-h4); margin-bottom: var(--space-2); }
-
-  .split { display: grid; gap: var(--space-6); }
-  @media (min-width: 900px) { .split { grid-template-columns: 1.4fr 1fr; gap: var(--space-8); align-items: center; } }
-  .districts { list-style: none; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--ink-100); }
-  .districts li { border-bottom: 1px solid var(--ink-100); }
-  .districts a { display: flex; justify-content: space-between; align-items: center; padding: var(--space-4) 0; color: var(--ink-900); text-decoration: none; font-weight: 500; }
-  .districts a::after { content: '\2192'; color: var(--depth-500); }
-  .districts a:hover { color: var(--depth-700); }
-</style>
+<script>
+  /* Scroll reveal — purely additive, and skipped when motion is reduced. */
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const items = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach(el => el.classList.add('is-in'));
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -12% 0px' });
+    items.forEach(el => io.observe(el));
+  }
+</script>
