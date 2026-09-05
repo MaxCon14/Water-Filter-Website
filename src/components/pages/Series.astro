@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageHeader from '../PageHeader.astro';
 import CTABand from '../CTABand.astro';
+import FxCartridge from '../FxCartridge.astro';
 import { locales, path, type Locale, sub } from '../../i18n/ui';
 import { useT } from '../../i18n/strings';
 import { series as allSeries, bySeries, spec } from '../../data/products';
@@ -30,6 +31,26 @@ const en = locale === 'en';
       {s.audience.map(a => <span class="chip chip--stone">{a === 'domestic' ? (en ? 'Home' : 'Σπίτι') : (en ? 'Business' : 'Επιχείρηση')}</span>)}
     </div>
   </PageHeader>
+
+  {s.key === 'fx' && (
+    <section class="section section--tight" style="background:var(--ink-050)">
+      <div class="wrap">
+        <div class="series-lineup">
+          {items.map(it => (
+            <div class="series-lineup__item">
+              <FxCartridge size={it.size} h={it.size === '10' ? 200 : it.size === '15' ? 268 : 300} />
+              <span class="mono small" style="color:var(--ink-900);font-weight:600">{it.sku}</span>
+              <span class="mono" style="font-size:var(--fs-micro);color:var(--ink-500)">{it.size}"</span>
+            </div>
+          ))}
+        </div>
+        <p class="small muted" style="text-align:center;margin-top:var(--space-5)">
+          {en ? 'Shown at true relative length. The number is the cartridge length in inches.'
+              : 'Σε πραγματική αναλογία μήκους. Ο αριθμός είναι το μήκος του φίλτρου σε ίντσες.'}
+        </p>
+      </div>
+    </section>
+  )}
 
   <section class="section">
     <div class="wrap">
@@ -96,6 +117,8 @@ const en = locale === 'en';
   <CTABand locale={locale} />
 </Base>
 <style>
+  .series-lineup { display: flex; align-items: flex-end; justify-content: center; gap: clamp(var(--space-4), 6vw, var(--space-9)); }
+  .series-lineup__item { display: grid; justify-items: center; gap: var(--space-2); }
   .mini { margin-top: var(--space-4); display: grid; gap: var(--space-2); font-size: var(--fs-small); }
   .mini > div { display: flex; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--ink-100); align-items: center; }
   .mini dt { color: var(--ink-500); }

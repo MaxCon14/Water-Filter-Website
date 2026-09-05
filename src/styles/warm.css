@@ -241,3 +241,17 @@
 
 /* The header is sticky, so anchored headings need clearance. */
 h1, h2, h3 { scroll-margin-top: 88px; }
+
+/* ---------- FX lineup — three cartridges at true relative length ---------- */
+.lineup { padding-block: var(--space-6) var(--space-7); }
+.lineup__row {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: clamp(var(--space-3), 4.5vw, var(--space-8));
+}
+.lineup__item { display: grid; justify-items: center; gap: var(--space-4); }
+.lineup__cap {
+  display: grid; justify-items: center; gap: 2px;
+  font-size: var(--fs-micro); letter-spacing: .08em; color: rgba(255,255,255,.9);
+}
+.lineup__cap i { font-style: normal; color: rgba(255,255,255,.55); }
+.tintcard__real { display: grid; place-items: center; padding-block: var(--space-3); }

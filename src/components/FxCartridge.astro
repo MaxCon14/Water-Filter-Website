@@ -1,0 +1,158 @@
+---
+/**
+ * The FX cartridge, drawn from the client's product photograph.
+ *
+ * Proportions follow the real range: the number is the cartridge length in
+ * inches, so a 17 stands taller than a 10 by exactly that ratio. Silhouette,
+ * label panel and base collar are traced from the supplied photo.
+ *
+ * This is an illustration, not the photograph. When the real image lands in
+ * /public/images/, swap it in via <Figure src="…"> — see public/images/README.md.
+ */
+interface Props {
+  size: '10' | '15' | '17';
+  /** Rendered height in px at the widest breakpoint */
+  h?: number;
+  label?: boolean;
+  class?: string;
+}
+const { size, h = 320, label = true, class: cls = '' } = Astro.props;
+
+/* Body length scales with the stated inches; cap and base are fixed hardware. */
+const inches = Number(size);
+const bodyH = Math.round(inches * 19);      // 190 / 285 / 323
+const capH = 46;
+const baseH = 26;
+const W = 108;
+const totalH = capH + bodyH + baseH;
+const vb = `0 0 ${W + 40} ${totalH + 30}`;
+const x = 20;                                // left inset for the shadow
+const bodyY = capH;
+const uid = `fx${size}`;
+---
+<svg
+  viewBox={vb}
+  class={cls}
+  style={`height:${h}px;width:auto;display:block;overflow:visible`}
+  role="img"
+  aria-label={`Fluux FX-${size} filter cartridge, ${size} inches`}
+>
+  <defs>
+    <linearGradient id={`body-${uid}`} x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"    stop-color="#C9D3DA" />
+      <stop offset=".08"  stop-color="#F2F5F7" />
+      <stop offset=".38"  stop-color="#FFFFFF" />
+      <stop offset=".76"  stop-color="#EDF1F4" />
+      <stop offset="1"    stop-color="#BFCAD2" />
+    </linearGradient>
+    <linearGradient id={`metal-${uid}`} x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"   stop-color="#7E8B95" />
+      <stop offset=".3"  stop-color="#D6DEE4" />
+      <stop offset=".6"  stop-color="#9FAAB3" />
+      <stop offset="1"   stop-color="#727E88" />
+    </linearGradient>
+    <linearGradient id={`panel-${uid}`} x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"   stop-color="#E8ECEF" />
+      <stop offset=".5"  stop-color="#F7F9FA" />
+      <stop offset="1"   stop-color="#DFE5E9" />
+    </linearGradient>
+  </defs>
+
+  <!-- ground shadow -->
+  <ellipse cx={x + W / 2} cy={totalH + 14} rx={W * 0.62} ry="9" fill="#0B1620" opacity=".13" />
+
+  <!-- threaded outlet nub -->
+  <rect x={x + W / 2 - 13} y="0" width="26" height="16" rx="3" fill={`url(#metal-${uid})`} />
+  <g stroke="#6F7B85" stroke-width="1" opacity=".5">
+    <line x1={x + W / 2 - 13} y1="4"  x2={x + W / 2 + 13} y2="4" />
+    <line x1={x + W / 2 - 13} y1="8"  x2={x + W / 2 + 13} y2="8" />
+    <line x1={x + W / 2 - 13} y1="12" x2={x + W / 2 + 13} y2="12" />
+  </g>
+
+  <!-- collar rings -->
+  <rect x={x + W / 2 - 21} y="16" width="42" height="9"  rx="3" fill={`url(#metal-${uid})`} />
+  <rect x={x + W / 2 - 26} y="25" width="52" height="7"  rx="2" fill="#8D99A2" />
+  <!-- shoulder -->
+  <path
+    d={`M${x + W / 2 - 26} 32 h52 l${(W - 52) / 2} 14 h-${W} z`}
+    transform={`translate(0 0)`}
+    fill={`url(#body-${uid})`}
+  />
+  <path d={`M${x + W / 2 - 26} 32 L${x} 46 h${W} L${x + W / 2 + 26} 32 z`} fill={`url(#body-${uid})`} />
+
+  <!-- main body -->
+  <rect x={x} y={bodyY} width={W} height={bodyH} rx="7" fill={`url(#body-${uid})`} />
+
+  <!-- printed label panel -->
+  <rect x={x + 9} y={bodyY + 16} width={W - 18} height={bodyH - 46} rx="2" fill={`url(#panel-${uid})`} />
+
+  {label && (
+    <g>
+      {/* FLUUX wordmark, set vertically up the left edge as on the real label */}
+      <g transform={`translate(${x + 20} ${bodyY + 16 + (bodyH - 46) * 0.46}) rotate(-90)`}>
+        <text
+          x="0" y="0"
+          font-family="Commissioner, sans-serif" font-size="12" font-weight="700"
+          letter-spacing="1.4" fill="#1B2830"
+        >FLUUX</text>
+      </g>
+      {/* brand colour bar, sitting above the wordmark as on the label */}
+      <g transform={`translate(${x + 15} ${bodyY + 16 + (bodyH - 46) * 0.46 - 58})`}>
+        <rect y="0"    width="6.5" height="3" rx="1" fill="#E4801E" />
+        <rect y="4.2"  width="6.5" height="3" rx="1" fill="#F0B429" />
+        <rect y="8.4"  width="6.5" height="3" rx="1" fill="#4FA3C7" />
+        <rect y="12.6" width="6.5" height="3" rx="1" fill="#1D5E86" />
+      </g>
+
+      {/* model name */}
+      <text
+        x={x + 32} y={bodyY + 16 + 30}
+        font-family="Commissioner, sans-serif" font-size="20" font-weight="700"
+        letter-spacing="-0.4" fill="#101B22"
+      >FX-{size}</text>
+
+      {/* type line */}
+      <text
+        x={x + 32} y={bodyY + 16 + 42}
+        font-family="Commissioner, sans-serif" font-size="5.4" font-weight="600"
+        letter-spacing="0.2" fill="#33424C"
+      >BASIC TYPE</text>
+      <text
+        x={x + 32} y={bodyY + 16 + 50}
+        font-family="Commissioner, sans-serif" font-size="5.4" font-weight="600"
+        letter-spacing="0.2" fill="#33424C"
+      >ALL-IN-ONE FILTER</text>
+
+      {/* spec block — set as rules, the way small print reads at this scale */}
+      <g fill="#5A6B76" opacity=".62">
+        {Array.from({ length: Math.max(3, Math.floor((bodyH - 130) / 9)) }).map((_, i) => (
+          <rect
+            x={x + 32} y={bodyY + 16 + 62 + i * 9}
+            width={i % 4 === 0 ? 40 : i % 3 === 0 ? 52 : 46}
+            height="2.6" rx="1.3"
+          />
+        ))}
+      </g>
+
+      {/* MICROFILTER, foot of the label */}
+      <text
+        x={x + 32} y={bodyY + bodyH - 38}
+        font-family="Commissioner, sans-serif" font-size="5.2" font-weight="700"
+        letter-spacing="0.5" fill="#1B2830"
+      >MICROFILTER</text>
+    </g>
+  )}
+
+  <!-- base twist collar with its open/close marks -->
+  <rect x={x} y={bodyY + bodyH - 26} width={W} height="26" rx="4" fill="#E3E9ED" />
+  <rect x={x} y={bodyY + bodyH - 26} width={W} height="26" rx="4" fill={`url(#body-${uid})`} opacity=".45" />
+  <g fill="#7A8791" opacity=".8">
+    <circle cx={x + 20} cy={bodyY + bodyH - 13} r="2.4" />
+    <circle cx={x + W - 20} cy={bodyY + bodyH - 13} r="2.4" />
+  </g>
+  <!-- rounded foot -->
+  <path d={`M${x} ${bodyY + bodyH} h${W} v10 a7 7 0 01-7 7 h-${W - 14} a7 7 0 01-7-7 z`} fill={`url(#body-${uid})`} />
+
+  <!-- specular highlight -->
+  <rect x={x + 11} y={bodyY + 6} width="9" height={bodyH - 30} rx="4.5" fill="#fff" opacity=".55" />
+</svg>

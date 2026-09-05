@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Figure from './Figure.astro';
+import FxCartridge from './FxCartridge.astro';
 import '../styles/warm.css';
 import { path, sub, type Locale } from '../i18n/ui';
 import { useT } from '../i18n/strings';
@@ -175,17 +176,12 @@ const strip = en
     </svg>
 
     <div class="wrap" style="position:relative">
-      <div style="display:grid;place-items:center;padding-block:var(--space-6)">
-        <svg viewBox="0 0 200 320" style="width:min(38vw,220px)" aria-hidden="true">
-          <rect x="62" y="60" width="76" height="200" rx="38" fill="rgba(255,255,255,.1)" stroke="#CFF3FF" stroke-width="2.5" />
-          <rect x="76" y="30" width="48" height="36" rx="10" fill="rgba(255,255,255,.16)" stroke="#CFF3FF" stroke-width="2.5" />
-          <line x1="62" y1="104" x2="138" y2="104" stroke="#CFF3FF" stroke-width="2" opacity=".7" />
-          <line x1="62" y1="216" x2="138" y2="216" stroke="#CFF3FF" stroke-width="2" opacity=".7" />
-          <g fill="#9BE7FB" opacity=".8">
-            <circle cx="100" cy="140" r="4" /><circle cx="84" cy="168" r="3" />
-            <circle cx="116" cy="176" r="3" /><circle cx="100" cy="196" r="3.5" />
-          </g>
-        </svg>
+      <div class="lineup">
+        <div class="lineup__row">
+          <div class="lineup__item"><FxCartridge size="10" h={190} /><span class="lineup__cap mono">FX-10<i>10"</i></span></div>
+          <div class="lineup__item"><FxCartridge size="15" h={266} /><span class="lineup__cap mono">FX-15<i>15"</i></span></div>
+          <div class="lineup__item"><FxCartridge size="17" h={300} /><span class="lineup__cap mono">FX-17<i>17"</i></span></div>
+        </div>
       </div>
 
       <div style="max-width:56ch;margin-inline:auto;text-align:center">
@@ -233,7 +229,9 @@ const strip = en
         {range.map(({ s, tint, kids, friendly }) => (
           <a class="tintcard" href={path(locale, 'products', s.key)} style={`background:var(--tint-${tint})`}>
             <div class="tintcard__art">
-              <Figure art="cartridge" tint={tint} ratio="1 / 1" alt={`${s.name} ${en ? 'filter cartridge' : 'φίλτρο'}`} />
+              {s.key === 'fx'
+                ? <div class="tintcard__real"><FxCartridge size="15" h={210} /></div>
+                : <Figure art="cartridge" tint={tint} ratio="1 / 1" alt={`${s.name} ${en ? 'filter cartridge' : 'φίλτρο'}`} />}
             </div>
             <div>
               <p class="tintcard__name">{s.name}</p>

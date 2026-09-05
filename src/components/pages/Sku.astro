@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageHeader from '../PageHeader.astro';
 import SpecTable from '../SpecTable.astro';
+import FxCartridge from '../FxCartridge.astro';
 import { locales, path, type Locale } from '../../i18n/ui';
 import { useT } from '../../i18n/strings';
 import { products, getSeries, bySeries, spec } from '../../data/products';
@@ -96,6 +97,14 @@ const micron = spec(p, 'micron');
 
       <!-- Sticky enquiry rail -->
       <aside class="sku__rail">
+        {p.series === 'fx' && (
+          <div class="sku__shot">
+            <FxCartridge size={p.size} h={300} />
+            <p class="small muted" style="text-align:center;margin-top:var(--space-3)">
+              {en ? `${p.sku} shown at ${p.size} inches` : `${p.sku} στις ${p.size} ίντσες`}
+            </p>
+          </div>
+        )}
         <div class="rail">
           <p class="mono small muted">{en ? 'NEXT STEP' : 'ΕΠΟΜΕΝΟ ΒΗΜΑ'}</p>
           <p style="margin-top:var(--space-3);font-weight:600;color:var(--ink-900)">
@@ -129,6 +138,9 @@ const micron = spec(p, 'micron');
   .sku__rail { position: static; }
   @media (min-width: 960px) { .sku__rail { position: sticky; top: 88px; } }
   .rail { border: 1px solid var(--ink-100); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--ink-050); }
+  .sku__shot { display: grid; justify-items: center; padding: var(--space-6) var(--space-4); margin-bottom: var(--space-4);
+               border: 1px solid var(--ink-100); border-radius: var(--radius-lg);
+               background: linear-gradient(170deg, #fff, var(--ink-050)); }
 
   .sizes__row { display: grid; gap: var(--space-2); grid-template-columns: repeat(3, 1fr); }
   .sizes__opt { display: grid; gap: var(--space-1); padding: var(--space-3); border: 1px solid var(--ink-100); border-radius: var(--radius); background: var(--surface); text-decoration: none; text-align: center; }
